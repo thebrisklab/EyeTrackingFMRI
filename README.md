@@ -21,11 +21,12 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
     4. ET data sampling rate
 
 - **Convolution Function**: Performs convolution between eyeblink & eyefixation events and the Double-gamma Hemodynamic Response Function (HRF) using FFT.
-  - Function Signature: {Function input} (a,b,c,d from the ET Data Process Function ) $\rightarrow$ {Returns:} 1. ET convolution time series vector; 2. real-time vector
+  - Function Signature: {Function input} (a,b,c,d from the ET Data Process Function )
+  - Returns: 1. ET convolution time series vector; 2. real-time vector
 
-2.3 **time series extraction function**: To align the time points from eye tracking data with fMRI time points.
+2.3 **Time series extraction function**: To align the time points from eye-tracking convolution data with fMRI time points.
 
-   - **Equation**: $\text{timeseries subtraction}(eye\_tracking\_data, fMRI\_time\_points)$
+   - Function Signature: {Function input: }(ET convolution time series, fMRI mean time series, fMRI sampling rate (1.127))
 
 3.1 **confounder process function**: To process the confounder covariates of head motion 
 
