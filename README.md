@@ -7,7 +7,7 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 
 #### 1. fMRI Data Processing
 - **fMRI Process Function**: Extracts the fMRI time series for each brain region by calculating mean values across voxels by time points.
-  - Function Signature: $\text{fMRI_xii_pmean}(cifiti object, parcellation) \rightarrow \text{Mean fMRI Time Series: V by T matrix}$
+  - Function Signature: $\text{Function input}(cifiti object, parcellation) \rightarrow \text{Mean fMRI Time Series: V by T matrix}$
 
 - **fMRI Mapping Plot Function**: Maps brain region-specific data such as mean, p-value, coefficients, or t-statistics to a brain graph.
   - Returns: cifiti object for plotting
