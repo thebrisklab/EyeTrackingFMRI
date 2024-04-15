@@ -59,3 +59,6 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 7. **Model Diagnostics for OLS function**: To randomly pick the OLS model to do the model diagnostics on residuals
    - Function Signature: {Function input:} (1. Log.Y from 5, 2. Design matrix form 3.2) $\rightarrow$ {Returns:} (list of 1. ACF plot, 2.PACF plot, 3. Q-Q plot, 4.Histogram)
 
+
+# The required R packages
+#### 1.
