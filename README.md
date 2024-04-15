@@ -7,13 +7,13 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 
 #### 1. fMRI Data Processing
 - **fMRI Process Function**: Extracts the fMRI time series for each brain region by calculating mean values across voxels by time points.
-  - Function Signature: {Function input}(cifti object, parcellation) $\rightarrow$ {Function output: }Mean fMRI Time Series: V by T matrix
+  - Function Signature: {Function input:} (cifti object, parcellation) $\rightarrow$ {Function output:} Mean fMRI Time Series: V by T matrix
 
 - **fMRI Mapping Plot Function**: Maps brain region-specific data such as mean, p-value, coefficients, or t-statistics to a brain graph.
   - Returns: cifti object for plotting
 
 #### 2. Eye Tracking (ET) Data Processing
-- **ET Data Process Function**: Processes the eye tracking data to obtain parameters needed for convolution.
+- **ET Data Process Function**: Processes the eye-tracking data to obtain input parameters needed for convolution.
   - Returns:
     1. Total time of the ET task
     2. Onset of the ET events
