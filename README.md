@@ -38,13 +38,13 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 
    - Function Signature: {Function input:} (ET convolution from 2.3, nuisance covariates form 3.1) $\rightarrow$ {Returns:} T by J Design Matrix
 
-#### B.1 General Linear Regression:
+### B.1 General Linear Regression:
 
 4. **Brain Activation**: To execute autoregressive ARIMA regression to examine the relationship between ET data and brain region activation.
 
    -  Function Signature: {Function input:} (fMRI mean time series form 1.1, design matrix from 3.2 ) $\rightarrow$ {Returns:} (list of 1. ET-blink coefs, 2. ET-fixation coefs, 3. Residuals 4. Covariance matrix)
 
-#### B.2. Covariance Regression:
+### B.2. Covariance Regression:
 
 5. **OLSoutcome process function**: To construct the logarithm of \(Y\) as the outcome variable for regression analysis.
 
