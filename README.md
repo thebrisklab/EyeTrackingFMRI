@@ -59,9 +59,11 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 7. **Model Diagnostics for OLS function**: To randomly pick the OLS model to do the model diagnostics on residuals
    - Function Signature: {Function input:} (1. Log.Y from 5, 2. Design matrix form 3.2) $\rightarrow$ {Returns:} (list of 1. ACF plot, 2.PACF plot, 3. Q-Q plot, 4.Histogram)
   
-#### Note: A "big" function was also constructed to call the above functions all at once in real analysis. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjecpts have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
+#### Note: A "big" function was also constructed to call the above functions all at once in real analysis. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjects have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
 
-### C. Chord Diagram 
+### C. Population effects models
+
+### D. Visualisation: Heatmap & Chord Diagram
 
 # The required R packages
 - `eyelinker` - For processing eye-tracking data from Eyelink 1000 Plus devices.
