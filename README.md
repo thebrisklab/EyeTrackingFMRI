@@ -59,7 +59,22 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 7. **Model Diagnostics for OLS function**: To randomly pick the OLS model to do the model diagnostics on residuals
    - Function Signature: {Function input:} (1. Log.Y from 5, 2. Design matrix form 3.2) $\rightarrow$ {Returns:} (list of 1. ACF plot, 2.PACF plot, 3. Q-Q plot, 4.Histogram)
   
-#### A "big" function was also constructed to call the above functions all at once. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjecpts have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
+### A "big" function was also constructed to call the above functions all at once. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjecpts have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
 
 # The required R packages
-#### 1.
+- `eyelinker` - For processing eye-tracking data from Eyelink devices.
+- `dplyr` - For data manipulation and transformation within data frames.
+- `tidyr` - For tidying data, making it suitable for analysis.
+- `ggplot2` - For creating sophisticated data visualizations.
+- `intervals` - For working with interval data such as confidence intervals.
+- `stringr` - For manipulation of string objects.
+- `neuRosim` - For simulation of fMRI data in neuroimaging.
+- `lmtest` - For diagnostic tests in linear regression models.
+- `ciftiTools` - For working with CIFTI files used in neuroimaging data.
+- `sandwich` - For robust estimation of covariance matrices.
+- `readxl` - For reading Excel files into R.
+- `RCurl` - For network (HTTP/FTP/...) client interface.
+
+Additional commands:
+
+- `ciftiTools.setOption("wb_path", "/Users/fredhuang/Downloads/workbench")` - Sets the Workbench command-line applications path in `ciftiTools`.
