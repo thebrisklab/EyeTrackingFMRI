@@ -21,39 +21,41 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
     4. ET data sampling rate
 
 2.2 **Convolution Function**: Performs convolution between eyeblink & eyefixation events and the Double-gamma Hemodynamic Response Function (HRF) using FFT.
-  - Function Signature: {Function input} (a,b,c,d from the ET Data Process Function )
+  - Function Signature: {Function input} (Returns from the 2.1 ET Data Process Function )
   - Returns: 1. ET convolution time series vector; 2. real-time vector
 
 2.3 **Time series extraction function**: To align the time points from eye-tracking convolution data with fMRI time points.
 
-   - Function Signature: {Function input: }(ET convolution time series, fMRI mean time series, fMRI sampling rate (1.127))
+   - Function Signature: {Function input: }(ET convolution time series from 2.2, fMRI mean time series from 1.1, fMRI sampling rate (1.127))
 
 #### 3. Confounder Processing
 
-3.1 **confounder process function**: To process the confounder covariates of head motion 
+3.1 **confounder process function**: To process the nuisance covariates of head motion (In this case: 6 head motion control, 6 quadratics of 6 head motion control.)
 
-3.2 **design matrix function**: To construct the design matrix [Note, need to construct the eye blink, fixation, and other covariates (Need to be scaled).]
+   - Function Signature: {Function input:} (path of the file, fMRI mean time series for 1.1)
 
-   - **Equation**: $\text{confounder process}(covariates) \rightarrow \text{Design Matrix}$
+3.2 **design matrix function**: To construct the design matrix [Note, need to construct the eye blink, fixation, and nuisance covariates (Need to be scaled).]
 
-#### B. Regression:
+   - Function Signature: {Function input:} (ET convolution from 2.3, nuisance covariates form 3.1) $\rightarrow$ {Returns:} T by J Design Matrix
 
-4. **PolynomialARIMA function**: To execute Polynomial ARIMA regression, returning a list of eyeblink & eyefixation coefficients and residuals.
+#### B.1 General Linear Regression:
 
-   - **Equation**: $\text{PolynomialARIMA}(data) \rightarrow \{\text{coefficients}, \text{residuals}\}$
+4. **Brain Activation**: To execute autoregressive ARIMA regression to examine the relationship between ET data and brain region activation.
+
+   -  Function Signature: {Function input:} (fMRI mean time series form 1.1, design matrix from 3.2 ) $\rightarrow$ {Returns:} (list of 1. ET-blink coefs, 2. ET-fixation coefs, 3. Residuals 4. Covariance matrix)
+
+#### B.2. Covariance Regression:
 
 5. **OLSoutcome process function**: To construct the logarithm of \(Y\) as the outcome variable for regression analysis.
 
-   - **Equation**: $\log(Y_{vivj}) \text{ as outcome}$
+   - Function Signature: {Function input:} (residuals from 4) $\rightarrow$ {Returns:} (logarithm of T by $\frac{V(V+1)}{2}$ matrix)
 
-6.1 **OLSfitting function**: To perform OLS regression for all "5050" regions with robust estimation techniques. [Robust Estimation]
-   - **Equation**: $\text{OLSfitting}(data, \text{regions}=5050) \rightarrow \text{OLS Outcome}$
+6.1 **OLSfitting function**: To perform LS regression for all $\frac{V(V+1)}{2}$ regions with robust estimation techniques. [HC 3]
+   - Function Signature: {Function input:} (Log.Y from 5, Design matrix from 3.2) $\rightarrow$ {Returns:} (list of 1. Coefficients, 2. Robust covariance matrix)
 
-6.2 **Comparison statistic function**: To compare the t-statistic between Eyeblink and Eyefixation estimated coefficients
-    -**Input**: robust regression coefficients for all 5050 OLS models
-    **Output**: lower-left triangle matrix storing 5050 comparisons 
+6.2 **Comparison statistic function**: To compare the z-statistic between the slope of Eye-blink and Eye-fixation estimated coefficients from 6.1
+   - Function Signature: {Function input:} (list from 6.1) $\rightarrow$ {Returns:} (V by V Z-statistic matrix)
 
 7. **Model Diagnostics for OLS function**: To randomly pick the OLS model to do the model diagnostics on residuals
-   - **Input**: is the same as function 6.1, i.e., use log. Y and design matrix to calculate the residuals and make plots
+   - Function Signature: {Function input:} (1. Log.Y from 5, 2. Design matrix form 3.2) $\rightarrow$ {Returns:} (list of 1. ACF plot, 2.PACF plot, 3. Q-Q plot, 4.Histogram)
 
-8. **Got the z-statistics for Eye-fixation - Eye-blink.**
