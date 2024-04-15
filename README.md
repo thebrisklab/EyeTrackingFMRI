@@ -1,21 +1,28 @@
-# EyeTrackingFMRI
-Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes 1) task activation modeling using the general linear model and 2) covariance regression.
+# EyeTrackingFMRI - repository
+Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes 1) task activation modeling using the general linear model and 2) covariance regression; and the necessary data processing procedures for eye-tracking (ET) data. The repository contains the code for the replication of "Simultaneous Analysis of Eye-tracking and fMRI Data Collected in Children with ASD".
 
-#### A. Data Processing:
+# The workflow for the overall process in this repository
 
-1.1 **fMRI process function**: To extract the fMRI time series for each brain region, calculating mean values across voxel by time points.
+### A. Data Processing:
 
-   - **Equation**: $\text{fMRIprocess}(vertex, time\_points) \rightarrow \text{Mean fMRI Time Series}$
+#### 1. fMRI Data Processing
+- **fMRI Process Function**: Extracts the fMRI time series for each brain region by calculating mean values across voxels by time points.
+  - Function Signature: `$\text{fMRIprocess}(vertex, time\_points) \rightarrow \text{Mean fMRI Time Series: V by T matrix}$`
 
-1.2 **fMRIMapping Plot function**: To map the xii_pmean/coefficients/t-statistics to our brain graph 
+- **fMRI Mapping Plot Function**: Maps brain region-specific data such as mean, p-value, coefficients, or t-statistics to a brain graph.
+  - Returns: cifiti object for plotting
 
-   - **Return** return xii_seed_long to plot the data in -log(10) scale
- 
-2.1 **ET Data Process function**: To process the eye tracking data and get the input parameter for *function 1*.
+#### 2. Eye Tracking (ET) Data Processing
+- **ET Data Process Function**: Processes the eye tracking data to obtain parameters needed for convolution.
+  - Returns:
+    1. Total time of the ET task
+    2. Onset of the ET events
+    3. Duration of the ET events
+    4. ET data sampling rate
 
-2.2 **Convolution function**: To perform the convolution between eyeblink & eyefixation and the HRF (Hemodynamic Response Function).
-
-    - **Equation**: $\text{convolution}(eye-blink, eye-fixation, HRF)$
+- **Convolution Function**: Performs convolution between eyeblink & eyefixation events and the Double-gamma Hemodynamic Response Function (HRF) using FFT.
+  - Function Signature: `$\text{convolution}(eye-blink, eye-fixation, HRF)$`
+  - Returns: list object with 1. ET convolution time series vector; 2. real-time vector
 
 2.3 **time series extraction function**: To align the time points from eye tracking data with fMRI time points.
 
