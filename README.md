@@ -28,6 +28,8 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 
    - Function Signature: {Function input: }(ET convolution time series, fMRI mean time series, fMRI sampling rate (1.127))
 
+#### 3. Confounder Processing
+
 3.1 **confounder process function**: To process the confounder covariates of head motion 
 
 3.2 **design matrix function**: To construct the design matrix [Note, need to construct the eye blink, fixation, and other covariates (Need to be scaled).]
