@@ -17,7 +17,7 @@ fMRI_xii_pmean <- function(dtseries_data, brain_parcellation = "Schaefer_100", r
   # Convert parcellation data into a vector, indicating the associated brain region
   parc_vec <- c(as.matrix(parc))
   
-  # Adjust for non-cortical vertices to align with parcellation scheme
+  # Adjust for non-cortical vertices to align with the parcellation scheme
   adjusted_data <- move_from_mwall(dtseries_data, NA)
   
   # Convert the adjusted data into a matrix format (voxel by time)
