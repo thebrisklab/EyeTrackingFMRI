@@ -84,3 +84,5 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 Additional commands:
 
 - `ciftiTools.setOption("wb_path", "your local path")` - Sets the Workbench command-line applications path in `ciftiTools`.
+
+# Simple Example
