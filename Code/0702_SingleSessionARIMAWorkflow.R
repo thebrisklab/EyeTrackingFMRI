@@ -41,7 +41,7 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
   
   # Construct the final design matrix for the session
   Scale.design.matrix.ses1 <- DesignMatrix_process(ET.covariates = cbind(sub.convolution.timeseries.blink.ses1, sub.convolution.timeseries.fixation.ses1), 
-                                                   head.confounder.ses1)
+                                                   head.motion.covariate)
   
   # Perform ARIMA modeling
   arima.ses1 <- ARIMAmodel(xii_pmean = pmean.ses1, design.matrix = Scale.design.matrix.ses1)
