@@ -101,25 +101,7 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
-# for only have one ses data
-DesignMatrix_process.ses1 <- function(ET.covariates = ET.covariates, head.motion.covariate = head.motion.covariate) {
-  # create two more columns, indicator for movie session (based on fMRI) and time index
-  indextime <- c(1:nrow(head.motion.covariate))
-  # just use cbind to merge the Et data and 12 head motion confounders together
-  covariate.data <- cbind(ET.covariates, head.motion.covariate, indextime)
-  # create the other interaction covariate terms
-  covariate.data$time_square <- covariate.data$indextime^2
-  
-  ########### scaling
-  # scale all the covariates within each task session
-  totalcovariates.scale <- covariate.data %>% 
-    mutate(across(trans_x:time_square, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
-  # convert to data.frame
-  totalcovariates.scale <- as.data.frame(totalcovariates.scale)
-  # Replace all NAs with 0 in the entire dataframe, these 0 is due to indicator for session1 = 0, scale these o gives NAs
-  totalcovariates.scale[is.na(totalcovariates.scale)] <- 0
-  return(totalcovariates.scale)
-}
+
 
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
@@ -295,7 +277,27 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
 # Example usage:
 # design_matrix <- DesignMatrix_process(ET_covariates, head_motion_data_session1, head_motion_data_session2)
 
-
+##########################################################################################################################################################################
+##########################################################################################################################################################################
+# for only have one ses data
+DesignMatrix_process.ses1 <- function(ET.covariates = ET.covariates, head.motion.covariate = head.motion.covariate) {
+  # create two more columns, indicator for movie session (based on fMRI) and time index
+  indextime <- c(1:nrow(head.motion.covariate))
+  # just use cbind to merge the Et data and 12 head motion confounders together
+  covariate.data <- cbind(ET.covariates, head.motion.covariate, indextime)
+  # create the other interaction covariate terms
+  covariate.data$time_square <- covariate.data$indextime^2
+  
+  ########### scaling
+  # scale all the covariates within each task session
+  totalcovariates.scale <- covariate.data %>% 
+    mutate(across(trans_x:time_square, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
+  # convert to data.frame
+  totalcovariates.scale <- as.data.frame(totalcovariates.scale)
+  # Replace all NAs with 0 in the entire dataframe, these 0 is due to indicator for session1 = 0, scale these o gives NAs
+  totalcovariates.scale[is.na(totalcovariates.scale)] <- 0
+  return(totalcovariates.scale)
+}
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
