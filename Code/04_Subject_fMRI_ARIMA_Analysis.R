@@ -30,8 +30,8 @@ ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
     arima.region <- arima(xii_pmean[i,], order = c(3,0,0), xreg = design.matrix)
     
     # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
-    estimate.region.blink[i, ] <- coef(summary(arima.region))[5, ]
-    estimate.region.fixation[i, ] <- coef(summary(arima.region))[6, ]
+    estimate.region.blink[i, ] <- coeftest(arima.region)["blink.ses1.ses2",]
+    estimate.region.fixation[i, ] <- coeftest(arima.region)["fixation.ses1.ses2",]
     
     # Store residuals and covariance matrix of the fitted model
     resi.acf[[i]] <- residuals(arima.region)
