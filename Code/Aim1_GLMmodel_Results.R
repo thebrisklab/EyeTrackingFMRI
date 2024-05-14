@@ -159,7 +159,9 @@ combined_data_frame.asdtd$ASD <- ifelse(combined_data_frame.asdtd$phenotype == "
 # Model 2: fixcoef_iv2 ~ \alpha_v2 + \gamma_v2 * ASD + \nu_v2
 # Model 3: (fixcoef_iv2 - blinkcoef_iv1) ~ (\alpha_v2 - \alpha_v1) + (\gamma_v2 - \gamma_v1) + (\nu_v2 - \nu_v1)
 
-# Model 1:
+#######################
+####### Model 1 #######
+#######################
 #  for loop to do t-test for each region
 ASD.TD.lm.nonASD <- data.frame()
 ASD.TD.lm.ASD <- data.frame()
