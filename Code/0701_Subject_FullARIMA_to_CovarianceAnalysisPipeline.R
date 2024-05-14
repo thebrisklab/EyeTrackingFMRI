@@ -26,8 +26,8 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   # Process fMRI data to get mean time series for each session
   xii.ses1 <- read_xifti(path_fMRI_ses1, brainstructures = "all")
   xii.ses2 <- read_xifti(path_fMRI_ses2, brainstructures = "all")
-  xii_pmean.ses1 <- fMRI_xii_pmean(xii = xii.ses1)
-  xii_pmean.ses2 <- fMRI_xii_pmean(xii = xii.ses2)
+  xii_pmean.ses1 <- fMRI_xii_pmean(dtseries_data = xii.ses1)
+  xii_pmean.ses2 <- fMRI_xii_pmean(dtseries_data = xii.ses2)
   
   #################################################################################################################
   # Process Eye Tracking data and compute convolution signals for blinks and fixations
