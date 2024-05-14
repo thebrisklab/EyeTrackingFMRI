@@ -34,7 +34,7 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
                                                                onsets = input.conv.fixation.ses1[[2]], 
                                                                duration = input.conv.fixation.ses1[[3]], 
                                                                sampling_rate = input.conv.fixation.ses1[[4]])
-  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses1, xii.mean = pmean.ses1, interval = 1.127)
+  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses1, xii.mean = fmri_data, tr = 1.127)
   
   # Process head motion confounders
   head.confounder.ses1 <- HeadMotionConfounder_process(path = path_HC_ses1, xii.mean = pmean.ses1)
