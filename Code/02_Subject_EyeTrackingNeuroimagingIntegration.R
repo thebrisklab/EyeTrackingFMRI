@@ -104,10 +104,10 @@ Convolution_function <- function(totaltime, onsets, durations, sampling_rate) {
 
 Extraction_ETtime <- function(conv_data, fmri_data, tr = 1.127) {
   # Calculate the indices to extract from the convolved data based on fMRI TR
-  indices <- round(seq(from = 1, to = length(conv_data), by = tr / 0.002), digits = 0)
+  indices <- round(seq(from = 1, to = length(conv_data[[1]]), by = tr / 0.002), digits = 0)
   
   # Extract the convolved data at the specified indices
-  extracted_data <- conv_data[indices]
+  extracted_data <- conv_data[[1]][indices]
   
   # Ensure the extracted ET time series length matches the fMRI time series
   if (ncol(fmri_data) > length(extracted_data)) {
