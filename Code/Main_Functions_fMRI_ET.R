@@ -102,9 +102,6 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
 
-
-##########################################################################################################################################################################
-##########################################################################################################################################################################
 # Define a function to perform the convolution of eye-tracking time series data
 # with a hemodynamic response function (HRF).
 
@@ -160,10 +157,10 @@ Convolution_function <- function(totaltime, onsets, durations, sampling_rate) {
 
 Extraction_ETtime <- function(conv_data, fmri_data, tr = 1.127) {
   # Calculate the indices to extract from the convolved data based on fMRI TR
-  indices <- round(seq(from = 1, to = length(conv_data), by = tr / 0.002), digits = 0)
+  indices <- round(seq(from = 1, to = length(conv_data[[1]]), by = tr / 0.002), digits = 0)
   
   # Extract the convolved data at the specified indices
-  extracted_data <- conv_data[indices]
+  extracted_data <- conv_data[[1]][indices]
   
   # Ensure the extracted ET time series length matches the fMRI time series
   if (ncol(fmri_data) > length(extracted_data)) {
@@ -266,7 +263,7 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
   
   # Scale the covariates within each task session
   totalcovariates.scale <- covariate.data %>% group_by(indicator) %>%
-    mutate(across(trans_x:rz_square_indicator, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
+    dplyr::mutate(across(trans_x:rz_square_indicator, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
   # Convert to data.frame and replace all NA values resulting from scaling with zeros
   totalcovariates.scale <- as.data.frame(totalcovariates.scale)
   totalcovariates.scale[is.na(totalcovariates.scale)] <- 0
@@ -334,8 +331,35 @@ ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
     arima.region <- arima(xii_pmean[i,], order = c(3,0,0), xreg = design.matrix)
     
     # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
-    estimate.region.blink[i, ] <- coef(summary(arima.region))[5, ]
-    estimate.region.fixation[i, ] <- coef(summary(arima.region))[6, ]
+    estimate.region.blink[i, ] <- coeftest(arima.region)["blink.ses1.ses2",]
+    estimate.region.fixation[i, ] <- coeftest(arima.region)["fixation.ses1.ses2",]
+    
+    # Store residuals and covariance matrix of the fitted model
+    resi.acf[[i]] <- residuals(arima.region)
+    cov.matrix[[i]] <- vcov(arima.region)
+  }
+  
+  # Return a list containing all the results
+  return(list(estimate.region.blink, estimate.region.fixation, resi.acf, cov.matrix))
+}
+
+ARIMAmodel.ONEses <- function(xii_pmean, design.matrix, num = 100) {
+  # Initialize matrices to store the ARIMA model's output for blink and fixation coefficients
+  estimate.region.blink <- matrix(data = NA, nrow = num, ncol = 4)
+  estimate.region.fixation <- matrix(data = NA, nrow = num, ncol = 4)
+  
+  # Initialize lists to store residuals and covariance matrices for each region
+  resi.acf <- vector("list", num)
+  cov.matrix <- vector("list", num)
+  
+  # Loop through each region to fit the ARIMA model and store the outputs
+  for (i in 1:num) {
+    # Fit the ARIMA model using the specified order and external regressors
+    arima.region <- arima(xii_pmean[i,], order = c(3,0,0), xreg = design.matrix)
+    
+    # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
+    estimate.region.blink[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.blink.ses1",]
+    estimate.region.fixation[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.fixation.ses1",]
     
     # Store residuals and covariance matrix of the fitted model
     resi.acf[[i]] <- residuals(arima.region)
