@@ -72,7 +72,7 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   blink.ses1.ses2 <- c(sub.convolution.timeseries.blink.ses1, sub.convolution.timeseries.blink.ses2)
   fixation.ses1.ses2 <- c(sub.convolution.timeseries.fixation.ses1, sub.convolution.timeseries.fixation.ses2)
   Scale.design.matrix <- DesignMatrix_process(ET.covariates = cbind(blink.ses1.ses2, fixation.ses1.ses2), 
-                                              head.confounder.ses1, head.confounder.ses2)
+                                              head.motion.covariate.ses1, head.motion.covariate.ses2)
   
   #################################################################################################################
   # Combine session fMRI time series and apply ARIMA model
