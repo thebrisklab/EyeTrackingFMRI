@@ -62,8 +62,8 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
                                                                onsets = input.conv.fixation.ses2[[2]], 
                                                                duration = input.conv.fixation.ses2[[3]], 
                                                                sampling_rate = input.conv.fixation.ses2[[4]])
-  sub.convolution.timeseries.fixation.ses2 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses2, 
-                                                                xii.mean = xii_pmean.ses2, interval = 1.127)
+  sub.convolution.timeseries.fixation.ses2 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses2, 
+                                                                fmri_data = xii_pmean.ses2, tr = 1.127)
   
   #################################################################################################################
   # Construct and scale the final design matrix with confounders from both sessions
