@@ -39,28 +39,28 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   # Compute and extract convolution time series for each session
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
                                                             onsets = input.conv.blink.ses1[[2]], 
-                                                            duration = input.conv.blink.ses1[[3]], 
+                                                            durations = input.conv.blink.ses1[[3]], 
                                                             sampling_rate = input.conv.blink.ses1[[4]])
-  sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses1, 
-                                                             xii.mean = xii_pmean.ses1, interval = 1.127)
+  sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.blink.ses1, 
+                                                             fmri_data = xii_pmean.ses1, tr = 1.127)
   
   convolution.timeseries.fixation.ses1 <- Convolution_function(totaltime = input.conv.fixation.ses1[[1]],
                                                                onsets = input.conv.fixation.ses1[[2]], 
-                                                               duration = input.conv.fixation.ses1[[3]], 
+                                                               durations = input.conv.fixation.ses1[[3]], 
                                                                sampling_rate = input.conv.fixation.ses1[[4]])
-  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses1, 
-                                                                xii.mean = xii_pmean.ses1, interval = 1.127)
+  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses1, 
+                                                                fmri_data = xii_pmean.ses1, tr = 1.127)
   
   convolution.timeseries.blink.ses2 <- Convolution_function(totaltime = input.conv.blink.ses2[[1]],
                                                             onsets = input.conv.blink.ses2[[2]], 
-                                                            duration = input.conv.blink.ses2[[3]], 
+                                                            durations = input.conv.blink.ses2[[3]], 
                                                             sampling_rate = input.conv.blink.ses2[[4]])
-  sub.convolution.timeseries.blink.ses2 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses2, 
-                                                             xii.mean = xii_pmean.ses2, interval = 1.127)
+  sub.convolution.timeseries.blink.ses2 <- Extraction_ETtime(conv_data = convolution.timeseries.blink.ses2, 
+                                                             fmri_data = xii_pmean.ses2, tr = 1.127)
   
   convolution.timeseries.fixation.ses2 <- Convolution_function(totaltime = input.conv.fixation.ses2[[1]],
                                                                onsets = input.conv.fixation.ses2[[2]], 
-                                                               duration = input.conv.fixation.ses2[[3]], 
+                                                               durations = input.conv.fixation.ses2[[3]], 
                                                                sampling_rate = input.conv.fixation.ses2[[4]])
   sub.convolution.timeseries.fixation.ses2 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses2, 
                                                                 fmri_data = xii_pmean.ses2, tr = 1.127)
@@ -72,7 +72,7 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   blink.ses1.ses2 <- c(sub.convolution.timeseries.blink.ses1, sub.convolution.timeseries.blink.ses2)
   fixation.ses1.ses2 <- c(sub.convolution.timeseries.fixation.ses1, sub.convolution.timeseries.fixation.ses2)
   Scale.design.matrix <- DesignMatrix_process(ET.covariates = cbind(blink.ses1.ses2, fixation.ses1.ses2), 
-                                              head.motion.covariate.ses1, head.motion.covariate.ses2)
+                                              head.confounder.ses1, head.confounder.ses2)
   
   #################################################################################################################
   # Combine session fMRI time series and apply ARIMA model
