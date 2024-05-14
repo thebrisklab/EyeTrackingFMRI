@@ -26,14 +26,14 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
                                                             onsets = input.conv.blink.ses1[[2]], 
                                                             duration = input.conv.blink.ses1[[3]], 
-                                                            accuracy = input.conv.blink.ses1[[4]])
+                                                            sampling_rate = input.conv.blink.ses1[[4]])
   sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses1, xii.mean = pmean.ses1, interval = 1.127)
   
   input.conv.fixation.ses1 <- ETascDataProcess(path = path_ET_ses1, fixation = TRUE)
   convolution.timeseries.fixation.ses1 <- Convolution_function(totaltime = input.conv.fixation.ses1[[1]],
                                                                onsets = input.conv.fixation.ses1[[2]], 
                                                                duration = input.conv.fixation.ses1[[3]], 
-                                                               accuracy = input.conv.fixation.ses1[[4]])
+                                                               sampling_rate = input.conv.fixation.ses1[[4]])
   sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses1, xii.mean = pmean.ses1, interval = 1.127)
   
   # Process head motion confounders
