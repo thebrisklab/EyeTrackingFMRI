@@ -19,7 +19,7 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
   xii1 <- read_xifti(path_fMRI_ses1, brainstructures = "all")
   
   # Process fMRI data to get the mean time series
-  pmean.ses1 <- fMRI_xii_pmean(xii = xii1)
+  pmean.ses1 <- fMRI_xii_pmean(dtseries_data = xii1)
   
   # Process Eye Tracking data and perform convolution for blink and fixation data
   input.conv.blink.ses1 <- ETascDataProcess(path = path_ET_ses1, blink = TRUE)
