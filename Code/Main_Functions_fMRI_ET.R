@@ -1,6 +1,11 @@
+#########################################################################################################
+#########################################################################################################
+################################# Functions supporting the project ######################################
+#########################################################################################################
+#########################################################################################################
+
 # Define a function to compute the mean fMRI time series for specified brain regions.
 # The function calculates the mean across vertices for each time point.
-
 # Inputs:
 # - dtseries_data: the raw .dtseries.nii MRI data to be processed.
 # - brain_parcellation: the label of the parcellation scheme, e.g., 'Schaefer_100', 'Schaefer_400', etc.
