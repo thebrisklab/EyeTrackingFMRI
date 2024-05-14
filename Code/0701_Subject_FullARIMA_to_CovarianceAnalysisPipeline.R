@@ -40,28 +40,28 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
                                                             onsets = input.conv.blink.ses1[[2]], 
                                                             duration = input.conv.blink.ses1[[3]], 
-                                                            accuracy = input.conv.blink.ses1[[4]])
+                                                            sampling_rate = input.conv.blink.ses1[[4]])
   sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses1, 
                                                              xii.mean = xii_pmean.ses1, interval = 1.127)
   
   convolution.timeseries.fixation.ses1 <- Convolution_function(totaltime = input.conv.fixation.ses1[[1]],
                                                                onsets = input.conv.fixation.ses1[[2]], 
                                                                duration = input.conv.fixation.ses1[[3]], 
-                                                               accuracy = input.conv.fixation.ses1[[4]])
+                                                               sampling_rate = input.conv.fixation.ses1[[4]])
   sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses1, 
                                                                 xii.mean = xii_pmean.ses1, interval = 1.127)
   
   convolution.timeseries.blink.ses2 <- Convolution_function(totaltime = input.conv.blink.ses2[[1]],
                                                             onsets = input.conv.blink.ses2[[2]], 
                                                             duration = input.conv.blink.ses2[[3]], 
-                                                            accuracy = input.conv.blink.ses2[[4]])
+                                                            sampling_rate = input.conv.blink.ses2[[4]])
   sub.convolution.timeseries.blink.ses2 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses2, 
                                                              xii.mean = xii_pmean.ses2, interval = 1.127)
   
   convolution.timeseries.fixation.ses2 <- Convolution_function(totaltime = input.conv.fixation.ses2[[1]],
                                                                onsets = input.conv.fixation.ses2[[2]], 
                                                                duration = input.conv.fixation.ses2[[3]], 
-                                                               accuracy = input.conv.fixation.ses2[[4]])
+                                                               sampling_rate = input.conv.fixation.ses2[[4]])
   sub.convolution.timeseries.fixation.ses2 <- Extraction_ETtime(conv.data = convolution.timeseries.fixation.ses2, 
                                                                 xii.mean = xii_pmean.ses2, interval = 1.127)
   
