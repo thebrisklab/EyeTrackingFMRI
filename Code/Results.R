@@ -6,7 +6,7 @@
 
 # source the R scripts with functions needed
 source("Main_Functions_fMRI_ET.R")
-source()
+source("0701_Subject_FullARIMA_to_CovarianceAnalysisPipeline.R")
 source()
 
 # Call Everything_to_ARIMAoutput funtion to get the arima model output
