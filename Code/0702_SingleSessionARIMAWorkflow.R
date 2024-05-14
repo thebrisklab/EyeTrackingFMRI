@@ -25,26 +25,26 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
   input.conv.blink.ses1 <- ETascDataProcess(file_path = path_ET_ses1, blink = TRUE)
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
                                                             onsets = input.conv.blink.ses1[[2]], 
-                                                            duration = input.conv.blink.ses1[[3]], 
+                                                            durations = input.conv.blink.ses1[[3]], 
                                                             sampling_rate = input.conv.blink.ses1[[4]])
-  sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv.data = convolution.timeseries.blink.ses1, xii.mean = pmean.ses1, interval = 1.127)
+  sub.convolution.timeseries.blink.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.blink.ses1, fmri_data = pmean.ses1, tr = 1.127)
   
-  input.conv.fixation.ses1 <- ETascDataProcess(path = path_ET_ses1, fixation = TRUE)
+  input.conv.fixation.ses1 <- ETascDataProcess(file_path = path_ET_ses1, fixation = TRUE)
   convolution.timeseries.fixation.ses1 <- Convolution_function(totaltime = input.conv.fixation.ses1[[1]],
                                                                onsets = input.conv.fixation.ses1[[2]], 
-                                                               duration = input.conv.fixation.ses1[[3]], 
+                                                               durations = input.conv.fixation.ses1[[3]], 
                                                                sampling_rate = input.conv.fixation.ses1[[4]])
-  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses1, xii.mean = fmri_data, tr = 1.127)
+  sub.convolution.timeseries.fixation.ses1 <- Extraction_ETtime(conv_data = convolution.timeseries.fixation.ses1, fmri_data = pmean.ses1, tr = 1.127)
   
   # Process head motion confounders
   head.confounder.ses1 <- HeadMotionConfounder_process(path = path_HC_ses1, xii.mean = pmean.ses1)
   
   # Construct the final design matrix for the session
-  Scale.design.matrix.ses1 <- DesignMatrix_process(ET.covariates = cbind(sub.convolution.timeseries.blink.ses1, sub.convolution.timeseries.fixation.ses1), 
-                                                   head.motion.covariate)
+  Scale.design.matrix.ses1 <- DesignMatrix_process.ses1(ET.covariates = cbind(sub.convolution.timeseries.blink.ses1, sub.convolution.timeseries.fixation.ses1), 
+                                                   head.confounder.ses1)
   
   # Perform ARIMA modeling
-  arima.ses1 <- ARIMAmodel(xii_pmean = pmean.ses1, design.matrix = Scale.design.matrix.ses1)
+  arima.ses1 <- ARIMAmodel.ONEses(xii_pmean = pmean.ses1, design.matrix = Scale.design.matrix.ses1)
   
   return(list(arima.ses1, Scale.design.matrix.ses1))
 }
