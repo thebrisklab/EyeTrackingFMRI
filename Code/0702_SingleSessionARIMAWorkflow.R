@@ -22,7 +22,7 @@ Everything_to_ARIMAoutput.ONEses <- function(path_fMRI_ses1, path_HC_ses1, path_
   pmean.ses1 <- fMRI_xii_pmean(dtseries_data = xii1)
   
   # Process Eye Tracking data and perform convolution for blink and fixation data
-  input.conv.blink.ses1 <- ETascDataProcess(path = path_ET_ses1, blink = TRUE)
+  input.conv.blink.ses1 <- ETascDataProcess(file_path = path_ET_ses1, blink = TRUE)
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
                                                             onsets = input.conv.blink.ses1[[2]], 
                                                             duration = input.conv.blink.ses1[[3]], 
