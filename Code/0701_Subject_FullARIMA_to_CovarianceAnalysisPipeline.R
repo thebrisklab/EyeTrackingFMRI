@@ -31,10 +31,10 @@ Everything_to_ARIMAoutput <- function(path_fMRI_ses1, path_fMRI_ses2,
   
   #################################################################################################################
   # Process Eye Tracking data and compute convolution signals for blinks and fixations
-  input.conv.blink.ses1 <- ETascDataProcess(path = path_ET_ses1, blink = TRUE)
-  input.conv.fixation.ses1 <- ETascDataProcess(path = path_ET_ses1, fixation = TRUE)
-  input.conv.blink.ses2 <- ETascDataProcess(path = path_ET_ses2, blink = TRUE)
-  input.conv.fixation.ses2 <- ETascDataProcess(path = path_ET_ses2, fixation = TRUE)
+  input.conv.blink.ses1 <- ETascDataProcess(file_path = path_ET_ses1, blink = TRUE)
+  input.conv.fixation.ses1 <- ETascDataProcess(file_path = path_ET_ses1, fixation = TRUE)
+  input.conv.blink.ses2 <- ETascDataProcess(file_path = path_ET_ses2, blink = TRUE)
+  input.conv.fixation.ses2 <- ETascDataProcess(file_path = path_ET_ses2, fixation = TRUE)
   
   # Compute and extract convolution time series for each session
   convolution.timeseries.blink.ses1 <- Convolution_function(totaltime = input.conv.blink.ses1[[1]],
