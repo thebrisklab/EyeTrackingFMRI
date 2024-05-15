@@ -1,0 +1,260 @@
+---
+title: "Try_eyeQuality"
+output: html_document
+date: "For 2024-04-23 Meeting"
+---
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# the package
+library(eyeQuality)
+library(eyelinker)
+library(neuRosim)
+library(tidyverse)
+```
+
+## 1. read the data
+```{r}
+# read the ASC file
+path =  "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18633-03/1863301.asc"
+testeye301 <- read.asc(fname = path, samples = TRUE, events = TRUE)
+
+# get the raw eyetracking data
+raw.301 <- testeye301$raw
+# real time
+raw.301$newtime <- (raw.301$time - min(raw.301$time))/1000 
+head(raw.301)
+
+# eyeQuality to detect the eye-blink event
+test.result <- detectBlinks(data = raw.301,
+               pupilLeft = "ps",
+               recHz = 500)
+test.result <- cbind(test.result, raw.301$newtime) # add the real time !! Using relative time is VERY important as the eyeblink loses some sampling data.
+head(test.result)
+```
+
+## 2. visulaize the pupilLeft.blink is indicator vectors (like boxcar vector)
+```{r fig.height=5, fig.width=10}
+plot(x = test.result$`raw.301$newtime`, y = test.result$pupilLeft.blink, type = "l", main = "eyeQuality")
+```
+
+## 2.  To get the .asc's Eyeblink time series 
+###  our original method
+```{r fig.height=5, fig.width=10}
+# function to obtain the eyeblink onsets, duration
+ETascDataProcess <- function( path = path, blink = FALSE, fixation = FALSE) {
+  # read the raw .asc data
+  ETasc <- read.asc(fname = path, samples = TRUE, events = TRUE)
+  # get the eye blink & fixation data, and created the real time
+  if (blink) {
+    ETtypein <- ETasc$blinks %>% mutate(ts = (stime - min(ETasc$raw$time))/1e3,
+                                        te = (etime - min(ETasc$raw$time))/1e3,
+                                        duration = dur/1e3)
+  } else if (fixation) {
+      ETtypein <- ETasc$fix %>% mutate(ts = (stime - min(ETasc$raw$time))/1e3,
+                                       te = (etime - min(ETasc$raw$time))/1e3,
+                                       duration = dur/1e3)
+      } else {break}
+  # convert to data.frame
+  ETtype <- as.data.frame(ETtypein)
+  # get the input for function 1
+  totaltime <- (max(ETasc$raw$time) - min(ETasc$raw$time))/1e3
+  onsets <- ETtypein$ts
+  duration <- ETtypein$duration
+  accruacy <- 0.002
+return(list(totaltime, onsets, duration, accruacy))
+}
+```
+
+```{r fig.height=5, fig.width=10}
+# call function to get the four options
+asclist <- ETascDataProcess(path = path, blink = TRUE)
+
+# boxcar function (indicator)
+s <- stimfunction(totaltime = asclist[[1]], onsets = asclist[[2]], durations = asclist[[3]], accuracy = asclist[[4]])
+
+time <- seq(0, asclist[[1]], by = asclist[[4]])
+
+# visulize
+plot(x= time, y = c(s,0), type = "l", main = "ASC file")
+```
+
+## 3. comparison two time series
+### Plot
+```{r fig.height=6, fig.width=18, warning=FALSE}
+# Create a data frame for ggplot
+dat.twoversion <- data.frame(time = c(test.result$`raw.301$newtime`, time),  
+                             value = c(test.result$pupilLeft.blink, c(s,0)),
+                             group = c(rep("eyeQuality", times = length(test.result$`raw.301$newtime`)), rep("eyeLink", times = length(time))))
+dat.twoversion$group <- factor(dat.twoversion$group, levels = c("eyeQuality", "eyeLink"))
+
+# Subtract 0.2 from the values of one of the groups
+dat.twoversion <- dat.twoversion %>%
+  mutate(value = ifelse(value == 1 & group == "eyeLink", value - 0.2, value))
+
+
+# Use ggplot to create the plot
+ggplot(dat.twoversion, aes(x=time, y= value, color = group, shape= group)) +
+  geom_line() +
+  geom_point(size = 3) +
+  scale_color_manual(values=c("eyeQuality"="blue", "eyeLink"="red")) +  #
+  scale_shape_manual(values=c("eyeQuality"=19, "eyeLink"=17)) +  # Different shapes for each time series
+  theme_minimal() +
+  ggtitle("Comparison of Two Results") +
+  theme(plot.margin=unit(c(1, 1, 1, 1), "lines"),
+        axis.text.x = element_text(size = 12),  
+        axis.text.y = element_text(size = 12),
+        axis.title = element_text(size = 15),
+        plot.title = element_text(size = 16),
+        legend.text = element_text(size = 14), 
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.key.size = unit(2, "lines")) +
+  guides(color=guide_legend(override.aes = list(size= 4)),  
+         shape=guide_legend(override.aes =  list(size = 4))) 
+```
+
+### Summary Statistics
+```{r}
+# For the console
+cat("# eyeQuality\n")
+print(table(test.result$pupilLeft.blink))
+
+cat("\n# ASC file\n")
+print(table(s))
+```
+## 4. consturct function to examine other subjects.
+```{r}
+Getting.comparison.plot <- function(path) {
+  testeye301 <- read.asc(fname = path, samples = TRUE, events = TRUE)
+
+  # get the raw eyetracking data
+  raw.301 <- testeye301$raw
+  # real time
+  raw.301$newtime <- (raw.301$time - min(raw.301$time))/1000 
+  ######### eyeQuality
+  # eyeQuality to detect the eye-blink event
+  test.result <- detectBlinks(data = raw.301,
+                 pupilLeft = "ps",
+                 recHz = 500)
+  test.result <- cbind(test.result, raw.301$newtime) # add the real time !! Using relative time is VERY important as the eyeblink loses some sampling data.
+  
+  ######## eyeLink + boxcarfunction
+  # call function to get the four options
+  asclist <- ETascDataProcess(path = path, blink = TRUE)
+
+  # boxcar function (indicator)
+  s <- stimfunction(totaltime = asclist[[1]], onsets = asclist[[2]], durations = asclist[[3]], accuracy = asclist[[4]])
+
+  time <- seq(0, asclist[[1]], by = asclist[[4]])
+  
+  ######## get the ggplot
+  #Create a data frame for ggplot
+  dat.twoversion <- data.frame(time = c(test.result$`raw.301$newtime`, time),  
+                               value = c(test.result$pupilLeft.blink, c(s,length(time)-length(s))),
+                              group = c(rep("eyeQuality", times = length(test.result$`raw.301$newtime`)), rep("eyeLink", times = length(time))))
+  dat.twoversion$group <- factor(dat.twoversion$group, levels = c("eyeQuality", "eyeLink"))
+
+  # Subtract 0.2 from the values of one of the groups
+  dat.twoversion <- dat.twoversion %>%
+   mutate(value = ifelse(value == 1 & group == "eyeLink", value - 0.2, value))
+
+
+  # Use ggplot to create the plot
+  plot.two <- ggplot(dat.twoversion, aes(x=time, y= value, color = group, shape= group)) +
+    geom_line() +
+    geom_point(size = 3) +
+    scale_color_manual(values=c("eyeQuality"="blue", "eyeLink"="red")) +  #
+    scale_shape_manual(values=c("eyeQuality"=19, "eyeLink"=17)) +  # Different shapes for each time series
+    theme_minimal() +
+    ggtitle("Comparison of Two Results") +
+    theme(plot.margin=unit(c(1, 1, 1, 1), "lines"),
+         axis.text.x = element_text(size = 12),  
+         axis.text.y = element_text(size = 12),
+         axis.title = element_text(size = 15),
+         plot.title = element_text(size = 16),
+        legend.text = element_text(size = 14), 
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.key.size = unit(2, "lines"))  +
+  guides(color=guide_legend(override.aes = list(size= 4)),  
+         shape=guide_legend(override.aes =  list(size = 4))) 
+  
+  return(list(plot.two, test.result))
+}
+```
+
+
+### other subject's comparison figures
+```{r fig.height=6, fig.width=18}
+twoblink.1898902 <- Getting.comparison.plot(path = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18989_02/189890202.asc")
+plot(twoblink.1898902[[1]])
+
+twoblink.1888702 <- Getting.comparison.plot(path = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18887-02/1888701.asc")
+plot(twoblink.1888702[[1]])
+
+twoblink.1887002 <- Getting.comparison.plot(path = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18887-02/1888701.asc")
+plot(twoblink.1887002[[1]])
+
+twoblink.1882602 <- Getting.comparison.plot(path = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18826_02/1882602.asc")
+plot(twoblink.1882602[[1]])
+
+twoblink.1917203 <- Getting.comparison.plot(path = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19172-03/1917201.asc")
+plot(twoblink.1917203[[1]])
+```
+
+## Summary
+__Finding!__
+
+1. Before summarizing the eyeQuality, I found that the Eyelink output loses some of the sampled data during the two crosshairs (around 0.5 second). Therefore, **extracting 1.127 seconds** of data may cause the second and third videos to be off!!!! (Something we did not found before!!!). This maybe due to **E-prime** or something? 
+
+### If there is no data loss, we expect the time intervals to all be 0.002
+```{r}
+# time interval from raw data
+which(diff(test.result$`raw.301$newtime`) > 0.0020001)/500 # task !
+# the real losing time
+diff(test.result$`raw.301$newtime`)[which(diff(test.result$`raw.301$newtime`) > 0.0020001)]
+```
+
+
+```{r}
+# time interval from raw data
+which(diff(twoblink.1888702[[2]]$`raw.301$newtime`) > 0.0020001)/500 # taks 1!
+# the real losing time
+diff(twoblink.1888702[[2]]$`raw.301$newtime`)[which(diff(twoblink.1888702[[2]]$`raw.301$newtime`) > 0.0020001)]
+```
+
+```{r fig.height=10, echo=FALSE}
+knitr::include_graphics("/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Results/Thesis Report/Poster/ETblink.jpg")
+```
+
+```{r}
+# time interval from raw data
+which(diff(twoblink.1898902[[2]]$`raw.301$newtime`) > 0.0020001)/500 # task 2!
+# the real losing time
+diff(twoblink.1898902[[2]]$`raw.301$newtime`)[which(diff(twoblink.1898902[[2]]$`raw.301$newtime`) > 0.0020001)]
+```
+
+__this is task 2, the only crosshair period is from around 241 - 256__
+
+###############################################################################################################################################
+
+__The detectBlinks function based on Noise-based algorithm from the paper:__ https://link.springer.com/article/10.3758/s13428-017-1008-1
+
+2. Their algorithm has been **verified in eye tracker data collected from EyeLink 1000 Plus with sampling size 500Hz!** The key to this algorithm is the recognition that small, high-frequency fluctuations in the recorded pupillometry signal are typically noise from the eyetracker and not physiological signals from the eye. During a blink, these fluctuations disappear because the rapid movement of the eyelid produces a strong signal that overshadows this noise. By identifying when the noise stops and then starts again, the algorithm can precisely mark the beginning and end of a blink.
+
+3. **Method:** The algorithm first identifies the missing values that represent the blinks. It then examines the data around these gaps for the characteristic noise pattern. By smoothing the data, it enhances the distinction between noise and actual signal changes due to eyelid movements. The algorithm looks for changes in the pattern moving backward from the last valid sample before the missing data for blink onset, and forward from the first valid sample after the missing data for blink offset, thus pinpointing the true start and end of the blink.
+The algorithm also accounts for edge cases, such as when recordings start or end with blinks or when multiple blinks occur in quick succession. The algorithm defines blink onset and offset during these special circumstances with additional rules to ensure accuracy.
+
+4. From the paper, it seems the **Noise-based algorithm** is doing a great job after comparing it with other popular algorithms. **Do we need to do any other verification?** Or the paper can serve as an evidence.
+
+5. The **eyeQuality Package** has some other functions to do quality control on eyetracking data "https://github.com/elab-umn/eyeQuality/tree/main". This is the first version of the package/functions. I feel like everything will be updated better in future? I think everything will be updated better in the future?
+
+6. Need to give BIG thank to Jamie!
+
+__Next Step__
+
+If we reach a consensus on the reliability and effectiveness of the eyeQuality tool, we could then try to：
+
+1. Compare the eyeblink and video manually???
+
+2. Eliminate fixation noise, i.e., excluding data from the 100 ms period preceding and following each eye blink event, as recommended by the EyeLink 1000 Plus manual.
+
+Anything else?
