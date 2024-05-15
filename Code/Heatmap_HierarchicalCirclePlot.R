@@ -4,32 +4,32 @@
 # This script includes the function to generate the circular dendrogram representing connectivity data with hierarchical clustering of brain regions.
 # Results AIM 2 in the poster
 
-Heatmap.plot <- function(mat = zstat.mat.1917203){
-    # store the Z matrix in new variable "mat", and index the row and column names
-    colnames(mat) <- 1:100
-    rownames(mat) <- 1:100
-    
-    #### to make the mat to be a full matrix instead of lower trangle matrix
-    makeSymm <- function(m) {
-      m[upper.tri(m)] <- t(m)[upper.tri(m)]
-      return(m)
-    }
-    mat <- makeSymm(mat)
-    
-    heatmap <- as.data.frame(as.table(mat))
-    colnames(heatmap) <- c("Region1", "Region2", "Zstat")
-    heatmap$Region1 <- as.numeric(heatmap$Region1)
-    heatmap$Region2 <- as.numeric(heatmap$Region2)
-    #heatmap.filter <- subset(heatmap, abs(heatmap$Z_stat) > 1.96) # to only plot some Z_stats meet specific condition
-    
-    # Heatmap 
-    heatmap.plot <- ggplot(data = heatmap, aes(x = Region1, y = Region2)) + # Changed color to fill for gradient coloring in points
-                    geom_point(aes(color = Zstat),shape = 15, size = 1.4) + # Added 'size' to adjust point size for better visualization
-                    scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(-2, +2)) + # Ensure the gradient scales properly
-                    theme_minimal() +
-                    labs(x = "Node 1", y = "Node 2", title = "Connectivity")
-    
-    return(heatmap.plot)
+Heatmap.plot <- function(mat = zstat.mat.1917203, lower.bound, upper.bound){
+  # store the Z matrix in new variable "mat", and index the row and column names
+  colnames(mat) <- 1:100
+  rownames(mat) <- 1:100
+  
+  #### to make the mat to be a full matrix instead of lower trangle matrix
+  makeSymm <- function(m) {
+    m[upper.tri(m)] <- t(m)[upper.tri(m)]
+    return(m)
+  }
+  mat <- makeSymm(mat)
+  
+  heatmap <- as.data.frame(as.table(mat))
+  colnames(heatmap) <- c("Region1", "Region2", "Zstat")
+  heatmap$Region1 <- as.numeric(heatmap$Region1)
+  heatmap$Region2 <- as.numeric(heatmap$Region2)
+  #heatmap.filter <- subset(heatmap, abs(heatmap$Z_stat) > 1.96) # to only plot some Z_stats meet specific condition
+  
+  # Heatmap 
+  heatmap.plot <- ggplot(data = heatmap, aes(x = Region1, y = Region2)) + # Changed color to fill for gradient coloring in points
+    geom_point(aes(color = Zstat),shape = 15, size = 1.4) + # Added 'size' to adjust point size for better visualization
+    scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(upper.bound, upper.bound)) + # Ensure the gradient scales properly
+    theme_minimal() +
+    labs(x = "Node 1", y = "Node 2", title = "Connectivity")
+  
+  return(heatmap.plot)
 }
 
 ##########################################################################################################################################################################
