@@ -1,6 +1,7 @@
 ########################################################################################################################################################################################################################################################################################################################
 ########################################################################################################################################################################################################################################################################################################################
 # Code for reproduce the poster "Analysis of Simultaneous Eye-tracking and fMRI data Collected in Children with ASD".
+# AIM 1 - GLM model to examine the relationship between eye movement events and brain activation.
 # Required R packages
 # Function to check and install required packages
 install_and_load_packages <- function(packages) {
@@ -49,6 +50,8 @@ ARIMAmodel.results_1917203 <- Everything_to_ARIMAoutput(
   path_ET_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19172-03/1917201.asc",
   path_ET_ses2 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19172-03/1917202.asc"
 )
+# To save the ARIMA output
+saveRDS(ARIMAmodel.results_1917203, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1917203.rds")
 
 # 1879403 TD ET
 ARIMAmodel.results_1879403 <- Everything_to_ARIMAoutput(
@@ -60,6 +63,8 @@ ARIMAmodel.results_1879403 <- Everything_to_ARIMAoutput(
   path_ET_ses2 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18794_03/18794_03_02.asc"
 )
 
+saveRDS(ARIMAmodel.results_1879403, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1879403.rds")
+
 # 1908702 ASD ET okay, but movie-1 has some jumpy around the edges of the screen 
 ARIMAmodel.results_1908702 <- Everything_to_ARIMAoutput(
   path_fMRI_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1908702/ses-01/func/sub-1908702_ses-01_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii",
@@ -70,6 +75,8 @@ ARIMAmodel.results_1908702 <- Everything_to_ARIMAoutput(
   path_ET_ses2 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19087-02/19087_02_02.asc"
 )
 
+saveRDS(ARIMAmodel.results_1908702, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1908702.rds")
+
 # 1878002 ASD, usability sheet sys et-2 sleep/crash
 ARIMAmodel.results_1878002 <- Everything_to_ARIMAoutput.ONEses(
   path_fMRI_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1878002_Ses4/ses-02/func/sub-1878002_ses-02_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii",
@@ -77,18 +84,25 @@ ARIMAmodel.results_1878002 <- Everything_to_ARIMAoutput.ONEses(
   path_ET_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18780_02/18780_02_01.asc"
 )
 
+saveRDS(ARIMAmodel.results_1878002, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1878002.rds")
+
 # Sub-1876402 ASD. no usable ET-2 data. For movie-1, can only analyze the current 246 timepoints.
 ARIMAmodel.results_1876402 <- Everything_to_ARIMAoutput.ONEses(
   path_fMRI_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1876402_Ses4/ses-02/func/sub-1876402_ses-02_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii",
   path_HC_ses1 =  "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1876402_Ses4/ses-02/func/sub-1876402_ses-02_task-movie1_run-01_desc-confounds_timeseries.tsv",
   path_ET_ses1 =  "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18764-02/1876401.asc"
 )
+
+saveRDS(ARIMAmodel.results_1876402, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1876402.rds")
+
 # 1873503 ASD
 ARIMAmodel.results_1873503 <- Everything_to_ARIMAoutput.ONEses(
   path_fMRI_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1873503_OnlySes1/ses-01/func/sub-1873503_ses-01_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii",
   path_HC_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1873503_OnlySes1/ses-01/func/sub-1873503_ses-01_task-movie1_run-01_desc-confounds_timeseries.tsv",
   path_ET_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/18735-03/1873501.asc"
 )
+
+saveRDS(ARIMAmodel.results_1873503, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1873503.rds")
 
 ########################################################################################################################################################################################################################################################################################################################
 ########################################################################################################################################################################################################################################################################################################################
@@ -162,7 +176,7 @@ combined_data_frame.asdtd$ASD <- ifelse(combined_data_frame.asdtd$phenotype == "
 #######################
 ####### Model 1 #######
 #######################
-#  for loop to do t-test for each region
+# for loop to do t-test for each region
 ASD.TD.lm.nonASD <- data.frame()
 ASD.TD.lm.ASD <- data.frame()
 for (i in 1:100) {
