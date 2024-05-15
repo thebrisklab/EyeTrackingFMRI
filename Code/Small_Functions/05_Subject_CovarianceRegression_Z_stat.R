@@ -141,7 +141,7 @@ Z.statistic.compare <- function(robust.regression.all) {
   # Populate the lower triangular part of the matrix with t-statistics
   for (i in 1:100) {
     for (j in 1:i) {
-      diff.blink.fixation[i, j] := t.stat.blink.fixation[index]
+      diff.blink.fixation[i, j] <- t.stat.blink.fixation[index]
       index <- index + 1
     }
   }
