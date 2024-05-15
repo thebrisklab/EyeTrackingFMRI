@@ -20,6 +20,7 @@ LM.pop.model <- function(combined_data_frame.asdtd, outcome, model3 = FALSE) {
     ASD.TD.lm.nonASD <- data.frame()
     ASD.TD.lm.ASD <- data.frame()
     if (model3) {
+      for (i in 1:100) {
       subset.dat <- subset(combined_data_frame.asdtd, Region == i)
       test <- lm( (subset.dat[["fixcoef"]] - subset.dat[["blinkcoef"]]) ~ ASD, data = subset.dat)
       pvalue.nonASD <- summary(test)$coefficient[1,] ##!!!!!### 1 is beta0, i.e., non.ASD only. 2 is beta1, the difference between non.ASD and ASD 
@@ -28,6 +29,7 @@ LM.pop.model <- function(combined_data_frame.asdtd, outcome, model3 = FALSE) {
       colnames(ASD.TD.lm.nonASD) <- c("coefs", "se", "tstat","pval")
       ASD.TD.lm.ASD <- rbind(ASD.TD.lm.ASD, pvalue.ASD)
       colnames(ASD.TD.lm.ASD) <- c("coefs", "se", "tstat","pval") 
+      }
     } else {
       for (i in 1:100) {
         subset.dat <- subset(combined_data_frame.asdtd, Region == i)
