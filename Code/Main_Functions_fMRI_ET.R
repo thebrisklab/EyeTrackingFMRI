@@ -427,15 +427,18 @@ LS.construct.logY <- function(resi.acf.list, length) {
   log.Y.outcome.vector <- vector("numeric")
   for (i in 1:100) {
     for (j in 1:i) {
+      single.vector <- vector()
       for (t in 1:length) {
-        log.Y.outcome.vector <- c(log.Y.outcome.vector, log.Y.arrary[i, j, t])
+        scalar <- log.Y.arrary[i,j,t]
+        single.vector <- c(single.vector, scalar)
       }
+      log.Y.outcome.vector <- c(log.Y.outcome.vector, single.vector)
     }
   }
   # construct T by 5050 outcome matrix
-  log.Y.arrary <- matrix(log.Y.outcome.vector, ncol = 5050, byrow = TRUE)
+  log.Y.forLS <- matrix(log.Y.outcome.vector, ncol = 5050, byrow = TRUE)
   
-  return(log.Y.arrary)
+  return(log.Y.forLS)
 }
 
 # Example of usage:
@@ -452,22 +455,22 @@ LS.construct.logY <- function(resi.acf.list, length) {
 # coefficients along with robust covariance matrices.
 
 # Input:
-# - log.Y.array: A matrix of log-transformed outcomes (671 by 5050).
+# - log.Y.forLS: A matrix of log-transformed outcomes (671 by 5050).
 # - totalcovariates.scale: Scaled covariates for inclusion in the regression model.
 
 # Output:
 # - A list containing regression results for all models.
 
-LS.robust.estiomation <- function(log.Y.array, totalcovariates.scale, length) {
+LS.robust.estiomation <- function(log.Y.forLS, totalcovariates.scale, length) {
   # Add intercept column to the design matrix
   design.matrix <- cbind(rep(1, length), totalcovariates.scale)
   
   # Initialize an empty list to store regression results
-  robust.regression.all <- vector("list", ncol(log.Y.array))
+  robust.regression.all <- vector("list", ncol(log.Y.forLS))
   
   # Perform OLS regression with robust standard errors for each model
-  for (i in 1:ncol(log.Y.array)) {
-    ols.model <- lm(log.Y.array[, i] ~ ., data = as.data.frame(design.matrix))
+  for (i in 1:ncol(log.Y.forLS)) {
+    ols.model <- lm(log.Y.forLS[, i] ~ ., data = as.data.frame(design.matrix))
     robust.ols <- coeftest(ols.model, vcov = vcovHC(ols.model, type = "HC3"))
     cov.blink.fix <- vcovHC(ols.model, type = "HC3")
     robust.regression.all[[i]] <- list(robust.ols, cov.blink.fix)
