@@ -173,51 +173,106 @@ combined_data_frame.asdtd$ASD <- ifelse(combined_data_frame.asdtd$phenotype == "
 # Model 2: fixcoef_iv2 ~ \alpha_v2 + \gamma_v2 * ASD + \nu_v2
 # Model 3: (fixcoef_iv2 - blinkcoef_iv1) ~ (\alpha_v2 - \alpha_v1) + (\gamma_v2 - \gamma_v1) + (\nu_v2 - \nu_v1)
 
+# source the function
+setwd("/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis/Thesis_fMRI/For Github")
+source("ThreeLMs_BrainMapping.R")
+
+# read the xii for brain mapping template
+xii <- read_xifti("/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1879403/ses-01/func/sub-1879403_ses-01_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii", 
+                  brainstructures = "all")
+
 #######################
 ####### Model 1 #######
 #######################
-# for loop to do t-test for each region
-ASD.TD.lm.nonASD <- data.frame()
-ASD.TD.lm.ASD <- data.frame()
-for (i in 1:100) {
-  test <- lm( (blinkcoef) ~ ASD, data = subset(combined_data_frame.asdtd, Region == i))
-  pvalue.nonASD <- summary(test)$coefficient[1,] ##!!!!!### 1 is beta0, i.e., non.ASD only. 2 is beta1, the difference between non.ASD and ASD 
-  pvalue.ASD <- summary(test)$coefficient[2,] 
-  ASD.TD.lm.nonASD <- rbind(ASD.TD.lm.nonASD, pvalue.nonASD)
-  ASD.TD.lm.ASD <- rbind(ASD.TD.lm.ASD, pvalue.ASD)
-}
+
+# call function to get the LM results
+# NOTE, the output is a list with 1 indicates population effects (non ASD); 2 indicates ASD modification on effects
+LMresults.blink <- LM.pop.model(combined_data_frame.asdtd, outcome = "blinkcoef")
+lm1.nonASD <- LMresults.blink[[1]]
+lm1.ASD <- LMresults.blink[[2]]
 
 ########################################################################################################################################################################################################################################################################################################################
-# Making brain mapping plots, i.e, Results Aim1: non.ASD (population effects)
-title.name = "nonASD: Effects of Eyeblink events on fMRI Signals"
-title.name.fdr = "nonASD: Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.05 Threshold"
-### Brain mapping
-inputformapping <- ASD.TD.lm.nonASD[,1]
-# read a brain template
-xii <- read_xifti("/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ImproveData/sub-1879403/ses-01/func/sub-1879403_ses-01_task-movie1_run-01_space-fsLR_den-91k_bold.dtseries.nii", 
-                  brainstructures = "all")
-brain.plot <- fMRIBrain_Mapping(dtseries_data = xii, mapping_data = inputformapping)
-plot(brain.plot, zlim = c(-2,2), title = title.name, borders = "black")
+# Making brain mapping plots, i.e, Results Aim1: non.ASD 
+brain.plot.nonASD.coef.lm1 <- Brainmap.coefs(lm1.nonASD[,1], xii = xii)
+title.name.nonASD.lm1 = "nonASD: Effects of Eyeblink events on fMRI Signals"
+plot(brain.plot.nonASD.coef.lm1, zlim = c(-2,2), title = title.name.nonASD.lm1, borders = "black")
 
 #### FDR adjusted P-value and set those region greater than 0.2 as NAs
-fdr.pvalue <- p.adjust(ASD.TD.lm.nonASD[,4], method = "fdr")
-fdr.pvalue[which(fdr.pvalue >= 0.05)] <- NA
-inputformapping.fdr <- -log10(fdr.pvalue)
-brain.plot.fdr <- fMRIBrain_Mapping(dtseries_data = xii, mapping_data = inputformapping.fdr)
-plot(brain.plot.fdr, zlim = c(0,3), title = title.name.fdr, borders = "black")
+brain.plot.nonASD.fdr.lm1 <- Brainmap.pval(lm1.nonASD[,4], fdr.threshold = 0.05, xii = xii)
+title.name.nonASD.fdr.lm1 = "nonASD: Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.05 Threshold"
+plot(brain.plot.nonASD.fdr.lm1, zlim = c(0,3), title = title.name.nonASD.fdr.lm1, borders = "black")
 
 #######################################################################################################################################################################################################################################################################################################################
 # Making brain mapping plots, i.e, Results Aim1 - ASD vs. non.ASD
-title.name = "nonASD vs. ASD: Differences in Effects of Eyeblink events on fMRI Signals"
-title.name.fdr = "nonASD vs. ASD: Differences in Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.2 Threshold"
-### Brain mapping
-inputformapping <- ASD.TD.lm.ASD[,1]
-brain.plot <- fMRIBrain_Mapping(dtseries_data = xii, mapping_data = inputformapping)
-plot(brain.plot, zlim = c(-2,2), title = title.name, borders = "black")
+brain.plot.ASD.coef.lm1 <- Brainmap.coefs(lm1.ASD[,1], xii = xii)
+title.name.ASD.lm1 = "nonASD: Effects of Eyeblink events on fMRI Signals"
+plot(brain.plot.ASD.coef.lm1, zlim = c(-2,2), title = title.name.ASD.lm1, borders = "black")
 
 #### FDR adjusted P-value and set those region greater than 0.2 as NAs
-fdr.pvalue <- p.adjust(ASD.TD.lm.ASD[,4], method = "fdr")
-fdr.pvalue[which(fdr.pvalue >= 0.2)] <- NA
-inputformapping.fdr <- -log10(fdr.pvalue)
-brain.plot.fdr <- fMRIBrain_Mapping(dtseries_data = xii, mapping_data = inputformapping.fdr)
-plot(brain.plot.fdr, zlim = c(0,3), title = title.name.fdr, borders = "black")
+brain.plot.ASD.fdr.lm1 <- Brainmap.pval(lm1.ASD[,4], fdr.threshold = 0.2, xii = xii)
+title.name.ASD.fdr,lm1 = "nonASD: Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.2 Threshold"
+plot(brain.plot.ASD.fdr.lm1, zlim = c(0,3), title = title.name.ASD.fdr, borders = "black")
+
+#######################
+####### Model 2 #######
+#######################
+
+# call function to get the LM results
+# NOTE, the output is a list with 1 indicates population effects (non ASD); 2 indicates ASD modification on effects
+LMresults.fixation <- LM.pop.model(combined_data_frame.asdtd, outcome = "fixcoef")
+lm2.nonASD <- LMresults.fixation[[1]]
+lm2.ASD <- LMresults.fixation[[2]]
+
+########################################################################################################################################################################################################################################################################################################################
+# Making brain mapping plots, i.e, Results Aim1: non.ASD 
+brain.plot.nonASD.coef.lm2 <- Brainmap.coefs(lm2.nonASD[,1], xii = xii)
+title.name.nonASD.lm2 = "nonASD: Effects of Eyefixation events on fMRI Signals"
+plot(brain.plot.nonASD.coef.lm2, zlim = c(-2,2), title = title.name.nonASD.lm2, borders = "black")
+
+#### FDR adjusted P-value and set those region greater than 0.2 as NAs
+brain.plot.nonASD.fdr.lm2 <- Brainmap.pval(lm2.nonASD[,4], fdr.threshold = 0.05, xii = xii)
+title.name.nonASD.fdr.lm2 = "nonASD: Effects of Eyefixation events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.05 Threshold"
+plot(brain.plot.nonASD.fdr.lm2, zlim = c(0,3), title = title.name.nonASD.fdr.lm2, borders = "black")
+
+#######################################################################################################################################################################################################################################################################################################################
+# Making brain mapping plots, i.e, Results Aim1 - ASD vs. non.ASD
+brain.plot.ASD.coef.lm2 <- Brainmap.coefs(lm2.ASD[,1], xii = xii)
+title.name.ASD.lm2 = "nonASD: Effects of Eyefixation events on fMRI Signals"
+plot(brain.plot.ASD.coef.lm2, zlim = c(-2,2), title = title.name.ASD.lm2, borders = "black")
+
+#### FDR adjusted P-value and set those region greater than 0.2 as NAs
+brain.plot.ASD.fdr.lm2 <- Brainmap.pval(lm2.ASD[,4], fdr.threshold = 0.2, xii = xii)
+title.name.ASD.fdr.lm2 = "nonASD: Effects of Eyefixation events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.2 Threshold"
+plot(brain.plot.ASD.fdr.lm2, zlim = c(0,3), title = title.name.ASD.fdr.lm2, borders = "black")
+
+#######################
+####### Model 3 #######
+#######################
+
+# call function to get the LM results
+# NOTE, the output is a list with 1 indicates population effects (non ASD); 2 indicates ASD modification on effects
+LMresults.coef_blink <- LM.pop.model(combined_data_frame.asdtd, model3 = TRUE)
+lm3.nonASD <- LMresults.coef_blink[[1]]
+lm3.ASD <- LMresults.coef_blink[[2]]
+
+########################################################################################################################################################################################################################################################################################################################
+# Making brain mapping plots, i.e, Results Aim1: non.ASD 
+brain.plot.nonASD.coef.lm3 <- Brainmap.coefs(lm3.nonASD[,1], xii = xii)
+title.name.nonASD.lm3 = "nonASD: Effects of Eyeblink events on fMRI Signals"
+plot(brain.plot.nonASD.coef.lm3, zlim = c(-2,2), title = title.name.nonASD.lm3, borders = "black")
+
+#### FDR adjusted P-value and set those region greater than 0.2 as NAs
+brain.plot.nonASD.fdr.lm3 <- Brainmap.pval(lm3.nonASD[,4], fdr.threshold = 0.05, xii = xii)
+title.name.nonASD.fdr.lm3 = "nonASD: Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.05 Threshold"
+plot(brain.plot.nonASD.fdr.lm3, zlim = c(0,3), title = title.name.nonASD.fdr.lm3, borders = "black")
+
+#######################################################################################################################################################################################################################################################################################################################
+# Making brain mapping plots, i.e, Results Aim1 - ASD vs. non.ASD
+brain.plot.ASD.coef.lm3 <- Brainmap.coefs(lm3.ASD[,1], xii = xii)
+title.name.ASD.lm3 = "nonASD: Effects of Eyeblink events on fMRI Signals"
+plot(brain.plot.ASD.coef.lm3, zlim = c(-2,2), title = title.name.ASD.lm3, borders = "black")
+
+#### FDR adjusted P-value and set those region greater than 0.2 as NAs
+brain.plot.ASD.fdr.lm3 <- Brainmap.pval(lm3.ASD[,4], fdr.threshold = 0.2, xii = xii)
+title.name.ASD.fdr.lm3 = "nonASD: Effects of Eyeblink events  on fMRI Signals: FDR-Adjusted -log10(P-Values) with 0.2 Threshold"
+plot(brain.plot.ASD.fdr.lm3, zlim = c(0,3), title = title.name.ASD.fdr.lm3, borders = "black")
