@@ -50,7 +50,7 @@ ARIMAmodel.results_1917203 <- Everything_to_ARIMAoutput(
   path_ET_ses1 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19172-03/1917201.asc",
   path_ET_ses2 = "/Users/fredhuang/Library/CloudStorage/OneDrive-EmoryUniversity/ImproveFConn_FredXuchengHuang/ET Data/19172-03/1917202.asc"
 )
-# To save the ARIMA output
+
 saveRDS(ARIMAmodel.results_1917203, "/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis Output/ARIMA_results/ARIMAmodel.results_1917203.rds")
 
 # 1879403 TD ET
