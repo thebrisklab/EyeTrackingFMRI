@@ -25,7 +25,7 @@ Heatmap.plot <- function(mat = zstat.mat.1917203, lower.bound, upper.bound){
   # Heatmap 
   heatmap.plot <- ggplot(data = heatmap, aes(x = Region1, y = Region2)) + # Changed color to fill for gradient coloring in points
     geom_point(aes(color = Zstat),shape = 15, size = 1.4) + # Added 'size' to adjust point size for better visualization
-    scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(upper.bound, upper.bound)) + # Ensure the gradient scales properly
+    scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(lower.bound, upper.bound)) + # Ensure the gradient scales properly
     theme_minimal() +
     labs(x = "Node 1", y = "Node 2", title = "Connectivity")
   
