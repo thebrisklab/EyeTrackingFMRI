@@ -21,7 +21,7 @@ required_packages <- c(
 # Run the function to install and load the packages
 install_and_load_packages(required_packages)
 # Setting Workbench path for ciftiTools
-ciftiTools.setOption("wb_path", "/Users/fredhuang/Downloads/workbench")
+ciftiTools.setOption("wb_path", "/Users/fredhuang/Downloads/workbench") # your real path
 
 # Clone the repository
 # repo <- git2r::clone(url = "https://github.com/thebrisklab/EyeTrackingFMRI.git", 
