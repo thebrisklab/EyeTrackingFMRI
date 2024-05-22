@@ -37,6 +37,7 @@ source("Code/0702_SingleSessionARIMAWorkflow.R")
 
 ############################################################################################################################################################
 ################### Data download: ET data; fMRI data; head motion data ###################
+options(timeout = 6000) # large data file needs more time 
 
 # Define the Dropbox URL
 url <- "https://www.dropbox.com/scl/fo/yvxr7s8ivy9vei4plozgr/ADvFl4wxAiFx367d7vZzUWo?rlkey=50c1mrlvjftkdl9ifcp5c7thw&st=t9s5mx4h&dl=1"
