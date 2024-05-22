@@ -42,7 +42,7 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
   - __Return:__ 1. ET convolution time series vector; 2. real-time vector
 
 2.3 `Extraction_ETtime`: Align the time points from eye-tracking convolution data with fMRI time points (T length), standardize the extracted convolution time series to ensure the max value is equal to 1.
-   - __Input:__ (1. convolution time series from 2.2, 2. fMRI time series from 1.1, 3. sampling interval of fMRI data, 1,127 in this project)
+   - __Input:__ (1. convolution time series from **2.2**, 2. fMRI time series from **1.1**, 3. sampling interval of fMRI data, 1,127 in this project)
    - __Output:__ T length convolution time series of ET events.
 
 #### 3. Confounder Processing
