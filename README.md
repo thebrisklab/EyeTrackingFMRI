@@ -3,32 +3,47 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
 
 # R Code Usage Guidelines
 
-# The workflow for the overall process in this repository
+## Main functions
+- `Main_Functions_fMRI_ET.R` contains the level 2 main functions used in this project. Individual sub-functions files can be found in the folder `Small_Functions`.
+- `0701_Subject_FullARIMA_to_CovarianceAnalysisPipeline.R` contains the level 1 functions that complete the workflow from 1. reading fMRI and eye-tracking data to the generalized regression output (Aim 1), and 2. covariance regression output (Aim 2).
+- `0702_SingleSessionARIMAWorkflow.R` contains functions to analyze subjects with only one useful task session data as a complement to the **0701_Subject_FullARIMA_to_CovarianceAnalysisPipeline.R**.
+- `ThreeLMs_BrainMapping.R` contains functions to do population-level analyses in Aim 1.
+- `Heatmap_HierarchicalCirclePlot.R` contains functions to create the circle and heatmap plots in Aim 2. 
+
+## Working functions
+- `00_Aim1_GLMmodel.R` calls the functions to do subject-level ARIMA regression (Aim 1)
+- `01_Aim1_GLMmodel_to_Population_Results.R` to do the population-level analyses from ARIMA regression and generate the brain mapping plots (Aim 1).
+- `02_Aim2_CovarianceRegression_Plots.R` to do the covariance regression and generate the circle plots (Aim 2).
+
+**When reproducing the project's results, open and run the three working functions in order.**
+
+# Overall analytical workflow (sub-functional description)
 
 ### A. Data Processing:
 
-#### 1. fMRI Data Processing
-1.1 **fMRI Process Function**: Extracts the fMRI time series for each brain region by calculating mean values across voxels by time points.
-  - Function Signature: {Function input:} (cifti object, parcellation) $\rightarrow$ {Returns:} Mean fMRI Time Series: V by T matrix
+#### 1. fMRI data processing function
+1.1 `fMRI_xii_pmean`: Extract the fMRI time series for each brain region by calculating mean values across voxels by time points.
+  - __Input:__ (cifti object, parcellation, the number of brain region V) $\rightarrow$ __Return:__ fMRI Time Series: V by T matrix
 
-1.2 **fMRI Mapping Plot Function**: Maps brain region-specific data such as mean, p-value, coefficients, or t-statistics to a brain graph.
-  - Returns: cifti object for plotting
+1.2 `fMRIBrain_Mapping`: Map data to brain regions to visualize data such as mean, p-values, or t-statistics on a brain map.
+  - __Input:__ (cifti object, mapping data (V length vector), parcellation, the number of brain region V) $\rightarrow$ __Return:__ brain graph object with mapped data
 
 #### 2. Eye Tracking (ET) Data Processing
-2.1 **ET Data Process Function**: Processes the eye-tracking data to obtain input parameters needed for convolution.
-  - Returns:
+2.1 `ETascDataProcess`: Process the eye-tracking data to obtain input parameters needed for convolution. Used `detectBlinks` function from `eyeQuality` R package to detect the eye blink events.
+  - __Input:__ (path for eye-tracking data, blink or fixation)
+  - __Return:__ list object includes:
     1. Total time of the ET task
-    2. Onset of the ET events
-    3. Duration of the ET events
+    2. Onsets of the ET events
+    3. Durations of the ET events
     4. ET data sampling rate
 
-2.2 **Convolution Function**: Performs convolution between eyeblink & eyefixation events and the Double-gamma Hemodynamic Response Function (HRF) using FFT.
-  - Function Signature: {Function input} (Returns from the 2.1 ET Data Process Function )
-  - Returns: 1. ET convolution time series vector; 2. real-time vector
+2.2 `Convolution_function`: Performs convolution between eyeblink & eyefixation events and the Double-gamma Hemodynamic Response Function (HRF) using FFT.
+  - __Input:__ (1. total time for the task, 2. onsets of the events, 3. durations of the events, 4. sampling interval)
+  - __Return:__ 1. ET convolution time series vector; 2. real-time vector
 
-2.3 **Time series extraction function**: To align the time points from eye-tracking convolution data with fMRI time points.
-
-   - Function Signature: {Function input: }(ET convolution time series from 2.2, fMRI mean time series from 1.1, fMRI sampling rate (1.127))
+2.3 `Extraction_ETtime`: Align the time points from eye-tracking convolution data with fMRI time points (T length), standardize the extracted convolution time series to ensure the max value is equal to 1.
+   - __Input:__ (1. convolution time series from 2.2, 2. fMRI time series from 1.1, 3. sampling interval of fMRI data, 1,127 in this project)
+   - __Output:__ T length convolution time series of ET events.
 
 #### 3. Confounder Processing
 
