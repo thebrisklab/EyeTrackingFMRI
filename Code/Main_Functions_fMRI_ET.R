@@ -71,10 +71,27 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   
   # Extract blink or fixation data and calculate real time
   if (blink) {
-    ETtypein <- ETasc$blinks %>% 
-      dplyr::mutate(ts = (stime - min(ETasc$raw$time)) / 1e3,
-                    te = (etime - min(ETasc$raw$time)) / 1e3,
-                    duration = dur / 1e3)
+    # eyeQuality to detect the eye-blink event
+    eyeQuality.result <- detectBlinks(data = ETasc$raw,
+                                      pupilLeft  = "ps",
+                                      recHz = 500)
+    # process to get the ts, te, duration
+    # get the whole ET blink subset dataframe
+    etblink <- subset(eyeQuality.result, eyeQuality.result$pupilLeft.blink == 1)
+    # calculate each blink's end time point, and store the index
+    et.end.indice <- which(diff(etblink$newtime) > 0.003)
+    # we only need to keep the start and end time for each eye blink event
+    etblink.se <- etblink[sort(c(1, et.end.indice, et.end.indice + 1, nrow(etblink))),]
+    # add lables
+    etblink.se$event <- rep(c("ts", "te"), time = nrow(etblink.se)/2)
+    etblink.se$blink_seq <- rep(c(1:(nrow(etblink.se)/2)), each = 2)
+    # remove rownames
+    rownames(etblink.se) <- NULL
+    
+    # convert to wide format, no need for pupil information
+    ETtypein <- etblink.se[,c("newtime","event", "blink_seq")] %>% group_by(blink_seq) %>% 
+      pivot_wider(names_from = "event", values_from = "newtime") %>%
+      dplyr::mutate(duration = te - ts)
   } else if (fixation) {
     ETtypein <- ETasc$fix %>% 
       dplyr::mutate(ts = (stime - min(ETasc$raw$time)) / 1e3,
@@ -94,6 +111,7 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   
   return(list(totaltime, onsets, durations, sampling_rate))
 }
+
 
 # Example of usage:
 # et_data <- ETascDataProcess(file_path = "path/to/data.asc", blink = TRUE, fixation = FALSE)
