@@ -334,6 +334,7 @@ DesignMatrix_process.ses1 <- function(ET.covariates = ET.covariates, head.motion
 #   - Residuals from the ARIMA model.
 #   - Covariance matrices for each region.
 
+
 ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
   # Initialize matrices to store the ARIMA model's output for blink and fixation coefficients
   estimate.region.blink <- matrix(data = NA, nrow = num, ncol = 4)
@@ -349,8 +350,8 @@ ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
     arima.region <- arima(xii_pmean[i,], order = c(3,0,0), xreg = design.matrix)
     
     # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
-    estimate.region.blink[i, ] <- coeftest(arima.region)["blink.ses1.ses2",]
-    estimate.region.fixation[i, ] <- coeftest(arima.region)["fixation.ses1.ses2",]
+    estimate.region.blink[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.blink.ses1",]
+    estimate.region.fixation[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.fixation.ses1",]
     
     # Store residuals and covariance matrix of the fitted model
     resi.acf[[i]] <- residuals(arima.region)
