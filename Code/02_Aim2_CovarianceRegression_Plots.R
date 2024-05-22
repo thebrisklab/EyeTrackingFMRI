@@ -28,7 +28,7 @@ ciftiTools.setOption("wb_path", "/Users/fredhuang/Downloads/workbench")
 
 # source the function
 # Source the R scripts with functions needed
-setwd("/Users/fredhuang/Desktop/Research_Project/Dr. Risk/thesis/Data Analysis/Thesis_fMRI/For Github")
+setwd("Code")
 source("Main_Functions_fMRI_ET.R")
 source("0701_Subject_FullARIMA_to_CovarianceAnalysisPipeline.R")
 
