@@ -85,4 +85,6 @@ Additional commands:
 
 - `ciftiTools.setOption("wb_path", "your local path")` - Sets the Workbench command-line applications path in `ciftiTools`.
 
+# R Code Usage Guidelines
+
 # Simple Example
