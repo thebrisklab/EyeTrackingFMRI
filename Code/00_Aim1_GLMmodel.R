@@ -14,7 +14,7 @@ install_and_load_packages <- function(packages) {
 
 # Define the packages needed
 required_packages <- c(
-  "eyelinker", "dplyr", "tidyr", "ggplot2", "intervals", "stringr", "httr",
+  "eyelinker", "dplyr", "tidyr", "ggplot2", "intervals", "stringr", "httr", "eyeQuality", "tidyverse",
   "neuRosim", "lmtest", "ciftiTools", "sandwich", "readxl", "RCurl", "git2r"
 )
 
@@ -127,3 +127,6 @@ ARIMAmodel.results_1873503 <- Everything_to_ARIMAoutput.ONEses(
 saveRDS(ARIMAmodel.results_1873503, "Data/Processed_data/ARIMAmodel.results_1873503.rds")
 
 ############################################################################################################################################################
+
+# 1908004 TD
+
