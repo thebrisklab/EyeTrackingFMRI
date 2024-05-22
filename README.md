@@ -1,6 +1,8 @@
 # EyeTrackingFMRI - repository
 Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes 1) task activation modeling using the general linear model and 2) covariance regression; and the necessary data processing procedures for eye-tracking (ET) data. The repository contains the code for the replication of "Simultaneous Analysis of Eye-tracking and fMRI Data Collected in Children with ASD".
 
+# R Code Usage Guidelines
+
 # The workflow for the overall process in this repository
 
 ### A. Data Processing:
@@ -85,6 +87,5 @@ Additional commands:
 
 - `ciftiTools.setOption("wb_path", "your local path")` - Sets the Workbench command-line applications path in `ciftiTools`.
 
-# R Code Usage Guidelines
 
 # Simple Example
