@@ -1,7 +1,7 @@
 # EyeTrackingFMRI - repository
 Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes 1) task activation modeling using the general linear model and 2) covariance regression; and the necessary data processing procedures for eye-tracking (ET) data. The repository contains the code for the replication of "Simultaneous Analysis of Eye-tracking and fMRI Data Collected in Children with ASD".
 
-# R Code Usage Guidelines
+# R Code usage guidelines
 
 ## Main functions
 - `Main_Functions_fMRI_ET.R` contains the level 2 main functions used in this project. Individual sub-functions files can be found in the folder `Small_Functions`.
@@ -41,62 +41,113 @@ Analysis of the simultaneous eye-tracking and movie-watching fMRI data. Includes
   - __Input:__ (1. total time for the task, 2. onsets of the events, 3. durations of the events, 4. sampling interval)
   - __Return:__ 1. ET convolution time series vector; 2. real-time vector
 
-2.3 `Extraction_ETtime`: Align the time points from eye-tracking convolution data with fMRI time points (T length), standardize the extracted convolution time series to ensure the max value is equal to 1.
-   - __Input:__ (1. convolution time series from **2.2**, 2. fMRI time series from **1.1**, 3. sampling interval of fMRI data, 1,127 in this project)
+2.3 `Extraction_ETtime`: Align the time points from eye-tracking convolution data with fMRI time points (T length), and standardize the extracted convolution time series to ensure the max value is equal to 1.
+   - __Input:__ (1. convolution time series from **2.2**, 2. fMRI time series from **1.1**, 3. sampling interval of fMRI data, 1.127 in this project)
    - __Output:__ T length convolution time series of ET events.
 
-#### 3. Confounder Processing
+#### 3. Confounder processing
 
-3.1 **confounder process function**: To process the nuisance covariates of head motion (In this case: 6 head motion control, 6 quadratics of 6 head motion control.)
+3.1 `HeadMotionConfounder_process`: To process the nuisance covariates of head motion (In this case: 6 head motion control, 6 quadratics of 6 head motion control.)
+   - __Input:__ (location of the head motion file; fMRI mean time series from **1.1**.)
+   - __Output:__ T by 12 data.frame (6 "trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z", and 6 quadatic terms).
 
-   - Function Signature: {Function input:} (path of the file, fMRI mean time series for 1.1)
+3.2 `DesignMatrix_process`: To construct the scaled design matrix. The default is two useful task sessions' (ses1, ses2) data.
+   - __Input:__ (1. ET covariates from **2.3**, 2. Head motion covariates for ses1 from **3.1**, 3. Head motion covariates for ses2 from **3.1**.)
+   - __Output:__ T by J data.frame, ready to be used in regression models (no intercept column!)
 
-3.2 **design matrix function**: To construct the design matrix [Note, need to construct the eye blink, fixation, and nuisance covariates (Need to be scaled).]
+3.3 `DesignMatrix_process.ses1`: To construct the scaled design matrix for those who only have one useful ses data
+   - __Input:__  (1. ET covariates from **2.3**, 2. Head motion covariates for useful ses from **3.1**)
+   - __Output:__ T by J` data.frame, no interaction terms across different sessions like **3.2**.
 
-   - Function Signature: {Function input:} (ET convolution from 2.3, nuisance covariates form 3.1) $\rightarrow$ {Returns:} T by J Design Matrix
+### B.1 General linear regression:
 
-### B.1 General Linear Regression:
+4. `ARIMAmodel`: To execute autoregressive AR(3) regression for each of V brain regions to examine the relationship between ET data and brain activation.
+   - __Input:__ (1. fMRI time series from **1.1**, 2. design matrix from **3**, 3.number of brain region V)
+   - __Output:__ A list object includes:
+      1. Estimated ET blink coefficients matrix (V by 4)
+      2. Estimated ET fixation coefficients matrix (V by 4)
+      3. Residuals for each of the V regressions (V by T)
+      4. A list object storing covariance matrics for each of the V regressions (V elements, each being a (J+4) by (J+4) matrix, where the number 4 corresponds to the inclusion of ar1, ar2, ar3, intercept)
 
-4. **Brain Activation**: To execute autoregressive ARIMA regression to examine the relationship between ET data and brain region activation.
+### B.2 Covariance regression:
 
-   -  Function Signature: {Function input:} (fMRI mean time series form 1.1, design matrix from 3.2 ) $\rightarrow$ {Returns:} (list of 1. ET-blink coefs, 2. ET-fixation coefs, 3. Residuals 4. Covariance matrix)
+5. `LS.construct.logY`: To process the residuals from ARIMA models and construct a logarithmic transformation of the outcome variable for Least Squares (LS) regression analysis.
+   - __Input:__ (1.residuals from **4.3**, 2. the length of time series T)
+   - __Output:__ T by $\frac{V(V+1)}{2}$ matrix, each column being dependent variables for LS regression below.
 
-### B.2. Covariance Regression:
+6.1 `LS.robust.estimation`: To perform LS regression using robust estimation (HC3) on T by $\frac{V(V+1)}{2}$ = 5050 regions.
+   - __Input:__ (1. T by 5050 matrix from **5**, 2. scaled design matrix from **3**, 3. time series length T)
+   - __Output:__ A list object with 5050 elements, each storing:
+      1. Robust estimation coefficients matrix (J+1 by 4)
+      2. Robust covariance matrix (J+1 by J+1)
 
-5. **OLSoutcome process function**: To construct the logarithm of \(Y\) as the outcome variable for regression analysis.
+6.2 `Z.statistic.compare`: To compare the z-statistics between the estimated coefficients for Eye-blink and Eye-fixation from **6.1**.
+   - __Input:__ The list object from **6.1**.
+   - __Output:__ V by V matrix of z-statistics.
 
-   - Function Signature: {Function input:} (residuals from 4) $\rightarrow$ {Returns:} (logarithm of T by $\frac{V(V+1)}{2}$ matrix)
-
-6.1 **OLSfitting function**: To perform LS regression for all $\frac{V(V+1)}{2}$ regions with robust estimation techniques. [HC 3]
-   - Function Signature: {Function input:} (Log.Y from 5, Design matrix from 3.2) $\rightarrow$ {Returns:} (list of 1. Coefficients, 2. Robust covariance matrix)
-
-6.2 **Comparison statistic function**: To compare the z-statistic between the slope of Eye-blink and Eye-fixation estimated coefficients from 6.1
-   - Function Signature: {Function input:} (list from 6.1) $\rightarrow$ {Returns:} (V by V Z-statistic matrix)
-
-7. **Model Diagnostics for OLS function**: To randomly pick the OLS model to do the model diagnostics on residuals
-   - Function Signature: {Function input:} (1. Log.Y from 5, 2. Design matrix form 3.2) $\rightarrow$ {Returns:} (list of 1. ACF plot, 2.PACF plot, 3. Q-Q plot, 4.Histogram)
+6.3. `Residual.Diag_OLS`: To randomly pick the LS models to do the model diagnostics on residuals.
+   - __Input:__ (1. Log Y from **5**, 2. scaled design matrix from **3**, 3. time series length T)
+   - __Output:__ A list object includes ACF, PACF, Q-Q norm, and Histogram plots for model diagnostics. 
   
-#### Note: A "big" function was also constructed to call the above functions all at once in real analysis. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjects have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
+#### In practice
+A level 1 function `0701_Subject_FullARIMA_to_CovarianceAnalysisPipeline.R` was constructed to call the above functions in sequence in real analysis. However, I recommend making such separate subfunctions because 1. it is easier to debug, and 2. some subjects have different available data points to analyze, and such subfunctions can be used to change the parameters for a single participant.
 
-### C. Population effects models
+### C. General linear regression: Population effects models
 
-### D. Visualisation: Heatmap & Chord Diagram
+#### LM models between ASD & non-ASD:
+ 1. Model 1: $blinkcoef_{iv1} = \alpha_{v1} + \gamma_{v1} * ASD + \nu_{v1}$
+ 2. Model 2: $fixcoef_{iv2} = \alpha_{v2} + \gamma_{v2} * ASD + \nu_{v2}$
+ 3. Model 3: $(fixcoef_{iv2} - blinkcoef_{iv1}) = (\alpha_{v2} - \alpha_{v1}) + (\gamma_{v2} - \gamma_{v1}) + (\nu_{v2} - \nu_{v1})$
+
+`ThreeLMs_BrainMapping.R` includes the following three functions for conducting three LM models to quantify the population effects:
+
+`LM.pop.model`: To conduct the three LM models; 
+`Brainmap.coefs`: Returns the mapping data for coefficients;
+`Brainmap.pval`: Returns the mapping data for log10 FDR P-values.
+
+### D. Covariance regression visualization: Heatmap & chord diagram
+
+`Heatmap_HierarchicalCirclePlot.R` includes the following two functions for creating the heatmap and circle plots for covariance regression:
+
+`Heatmap.plot`: Returns graph object storing heatmap figure;
+   - __Input:__ 1. V by V matrix, 2. lower bound of color range, 3. upper bound of color range
+     
+`Hierarchical.Circle.plot`: Returns graph object storing circle plots;
+   - __Input:__ 1. V by V matrix, 2. quantile value, 3. subject = TRUE
+   - **Note:** When subject == TRUE, the quantile value is used based on _qnorm()_, when subject != TRUE, quantile value is based on the data quantile.
 
 # The required R packages
-- `eyelinker` - For processing eye-tracking data from Eyelink 1000 Plus devices.
-- `stringr` - For manipulation of string objects.
-- `sandwich` - For robust estimation of covariance matrices.
-- `neuRosim` - For simulation of fMRI data in neuroimaging.
-- `dplyr` - For data manipulation and transformation within data frames.
-- `tidyr` - For tidying data, making it suitable for analysis.
-- `ggplot2` - For creating sophisticated data visualizations.
-- `intervals` - For working with interval data such as confidence intervals.
-- `lmtest` - For diagnostic tests in linear regression models.
-- `ciftiTools` - For working with CIFTI files used in neuroimaging data.
-- `readxl` - For reading Excel files into R.
-- `RCurl` - For network (HTTP/FTP/...) client interface.
-- `ggraph` - For creating network graphs using the grammar of graphics (Chord Diagram).
-- `igraph` - For network analysis and graph theory operations (Chord Diagram).
+
+## Data processing and manipulation
+  - `dplyr`,        # For data manipulation and transformation within data frames.
+  - `tidyr`,        # For tidying data, making it suitable for analysis.
+  - `tidyverse`,    # For an assortment of data science packages.
+  - `stringr`,      # For manipulation of string objects.
+  - `readxl`,       # For reading Excel files into R.
+
+## Statistical analysis and modeling
+  - `neuRosim`,     # For simulation of fMRI data in neuroimaging.
+  - `lmtest`,       # For diagnostic tests in linear regression models.
+  - `sandwich`,     # For robust estimation of covariance matrices.
+  - `intervals`,    # For working with interval data such as confidence intervals.
+
+## Visualization
+  - `ggplot2`,      # For creating sophisticated data visualizations.
+  - `ggraph`,       # For creating network graphs using the grammar of graphics (Chord Diagram).
+  - `igraph`,       # For network analysis and graph theory operations (Chord Diagram).
+  - `RColorBrewer`  # For color palettes for visualizations.
+
+## Neuroimaging
+  - `ciftiTools`,   # For working with CIFTI files used in neuroimaging data.
+
+## Networking and version control
+  - `httr`,         # For tools to work with URLs and HTTP.
+  - `git2r`,        # For working with Git repositories.
+  - `RCurl`,        # For network (HTTP/FTP/...) client interface.
+
+## Specialized packages
+  - `eyelinker`,    # For processing eye-tracking data from Eyelink 1000 Plus devices.
+  - `eyeQuality`,   # For assessing the quality of eye-tracking data.
   
 Additional commands:
 
