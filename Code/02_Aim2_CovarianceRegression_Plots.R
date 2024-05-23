@@ -69,9 +69,10 @@ print(Heatmapplot)
 ###### Hierarchical Circle Plot #######
 #######################################
 # call function to get the circle plot with customized threshold value
-# threshold.value is the quantile value, the function calculates the data value based on quantile
+# when subject = TRUE, quantile.value is the data cut-off based on qnorm(), i.e., filter out by p-value
+# when subject = FALSE, quantile.value is the cut-off based on data quantile distribution.(now population results have no significant value)
 
-Circleplot <- Hierarchical.Circle.plot(z_statistic_matrix = zstat.mat.1917203, threshold.value = 0.999)
+Circleplot <- Hierarchical.Circle.plot(z_statistic_matrix = zstat.mat.1917203, quantile.value = 0.999, subject = TRUE)
 print(Circleplot)
 
 
