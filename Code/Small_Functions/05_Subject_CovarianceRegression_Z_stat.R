@@ -81,7 +81,7 @@ LS.construct.logY <- function(resi.acf.list, length) {
 # Output:
 # - A list containing regression results for all models.
 
-LS.robust.estiomation <- function(log.Y.forLS, totalcovariates.scale, length) {
+LS.robust.estimation <- function(log.Y.forLS, totalcovariates.scale, length) {
   # Add intercept column to the design matrix
   design.matrix <- cbind(rep(1, length), totalcovariates.scale)
   
