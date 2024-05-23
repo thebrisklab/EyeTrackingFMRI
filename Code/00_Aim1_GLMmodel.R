@@ -14,11 +14,11 @@ install_and_load_packages <- function(packages) {
 
 # Define the packages needed
 required_packages <- c(
-  "eyelinker", "dplyr", "tidyr", "ggplot2", "intervals", "stringr", "httr", "eyeQuality", "tidyverse",
-  "neuRosim", "lmtest", "ciftiTools", "sandwich", "readxl", "RCurl", "git2r"
+  "eyelinker", "dplyr", "tidyr", "ggplot2", "intervals", "stringr", "httr", "tidyverse",
+  "neuRosim", "lmtest", "ciftiTools", "sandwich", "readxl", "RCurl", "git2r"，“devtools”
 )
 
-# install.packages("devtools")
+# eyeQuality package can be downloaded from gitbub
 devtools::install_github("elab-umn/eyeQuality")
 
 # Run the function to install and load the packages
