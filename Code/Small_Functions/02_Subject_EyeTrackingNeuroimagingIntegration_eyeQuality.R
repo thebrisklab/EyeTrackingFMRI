@@ -10,6 +10,41 @@
 # - A list containing the total time of the eye-tracking task, onsets, durations,
 #   and sampling rate accuracy.
 
+# no eyeQuality
+ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
+  # Read the raw .asc data
+  ETasc <- read.asc(fname = file_path, samples = TRUE, events = TRUE)
+  # Initialize an empty container for the extracted type
+  ETtypein <- NULL
+  
+  # Extract blink or fixation data and calculate real time
+  if (blink) {
+    ETtypein <- ETasc$blinks %>% 
+      dplyr::mutate(ts = (stime - min(ETasc$raw$time))/1e3,
+                    te = (etime - min(ETasc$raw$time))/1e3,
+                    duration = dur/1e3)
+
+  } else if (fixation) {
+    ETtypein <- ETasc$fix %>% 
+      dplyr::mutate(ts = (stime - min(ETasc$raw$time)) / 1e3,
+                    te = (etime - min(ETasc$raw$time)) / 1e3,
+                    duration = dur / 1e3)
+  } else {
+    stop("Please specify blink or fixation data to process.")
+  }
+  
+  # Convert the results to a data.frame
+  ETtype <- as.data.frame(ETtypein)
+  # Calculate the total time, onsets, and durations for further analysis
+  totaltime <- (max(ETasc$raw$time) - min(ETasc$raw$time)) / 1e3
+  onsets <- ETtype$ts
+  durations <- ETtype$duration
+  sampling_rate <- 0.002
+  
+  return(list(totaltime, onsets, durations, sampling_rate))
+}
+
+# eyeQuality (preferred)
 ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   # Read the raw .asc data
   ETasc <- read.asc(fname = file_path, samples = TRUE, events = TRUE)
@@ -103,6 +138,7 @@ Convolution_function <- function(totaltime, onsets, durations, sampling_rate) {
   return(list(convolved_signal, time_vector))
 }
 
+
 # Example of usage:
 # convolution_result <- Convolution_function(totaltime = 780, onsets = c(1, 100, 200), durations = c(1, 1, 1),  accuracy = 0.002)
 ##########################################################################################################################################################################
@@ -142,6 +178,7 @@ Extraction_ETtime <- function(conv_data, fmri_data, tr = 1.127) {
   
   return(standardized_data)
 }
+
 
 # Example of usage:
 # Assuming 'convolved_hrf_data' is your convolved ET data and 'fmri_time_series' is the fMRI time series
