@@ -436,7 +436,7 @@ LS.construct.logY <- function(resi.acf.list, length) {
     }
   }
   # construct T by 5050 outcome matrix
-  log.Y.forLS <- matrix(log.Y.outcome.vector, ncol = 5050, byrow = TRUE)
+  log.Y.forLS <- array(log.Y.outcome.vector, dim = c(length,5050))
   
   return(log.Y.forLS)
 }
