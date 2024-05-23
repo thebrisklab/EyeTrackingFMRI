@@ -69,6 +69,7 @@ print(Heatmapplot)
 ###### Hierarchical Circle Plot #######
 #######################################
 # call function to get the circle plot with customized threshold value
+# threshold.value is the quantile value, the function calculates the data value based on quantile
 
 Circleplot <- Hierarchical.Circle.plot(z_statistic_matrix = zstat.mat.1917203, threshold.value = 0.999)
 print(Circleplot)
