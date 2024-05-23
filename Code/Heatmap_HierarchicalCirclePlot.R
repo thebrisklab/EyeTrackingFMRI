@@ -34,7 +34,9 @@ Heatmap.plot <- function(mat = zstat.mat.1917203, lower.bound, upper.bound){
 
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################
-Hierarchical.Circle.plot <- function(z_statistic_matrix, threshold.value) {
+library(ciftiTools)
+
+Hierarchical.Circle.plot <- function(z_statistic_matrix, quantile.value, subject = TRUE) {
 
     ##### Prepare parcellation labels
     # Need to read the meta data from cifti data.
@@ -53,12 +55,18 @@ Hierarchical.Circle.plot <- function(z_statistic_matrix, threshold.value) {
     rownames(z_statistic_matrix) <- 1:100
     edges_df <- as.data.frame(as.table(z_statistic_matrix))
     connections_test <- edges_df
-    connections_test$Freq <- as.numeric(as.character(connections_test$Freq))
-    connections_test <- subset(connections_test, connections_test$Freq != 0)
+    # connections_test$Freq <- as.numeric(as.character(connections_test$Freq))
+    # connections_test <- subset(connections_test, connections_test$Freq != 0)
     
-    # Need to change the threshold based on the specific purpose, i.e., to keep the "connections" you wanted to show in the plot 
-    threshold <- quantile(abs(connections_test$Freq), threshold.value)
-    connections_test <- connections_test[abs(connections_test$Freq) >= threshold, ]
+    # Need to change the threshold based on specific purpose, i.e., to keep the "connections" you wanted to show in the plot 
+    if (subject == TRUE) {
+      quantile.cutoff <- qnorm(quantile.value)
+      connections_test <- connections_test[which(abs(connections_test$Freq) >= quantile.cutoff), ]
+    } else if (subject != TRUE){
+      first_quantile <- quantile(abs(connections_test$Freq), quantile.value)
+      connections_test <- connections_test[abs(connections_test$Freq) >= first_quantile, ]
+    }
+    
     
     # Define vertices for the graph
     vertices_test <- data.frame(
@@ -104,13 +112,31 @@ Hierarchical.Circle.plot <- function(z_statistic_matrix, threshold.value) {
       theme_void()
     
     # Add connectivity bundles to the plot
+    if (all(connections_test$Freq > 0)) {
     p.final <- p +  geom_conn_bundle(data =  get_con(from = connections_test$Var1, to = connections_test$Var2, values = connections_test$Freq), 
                                      alpha = 0.8, 
                                      tension = 0.5,
                                      aes(color = values)) +
-      scale_edge_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, na.value = "grey50")+
+      scale_edge_color_gradient(low = "white", high = "red") +
       guides( alpha = FALSE, size = FALSE) +
       labs(colour = "Brain Network")
+    } else if (all(connections_test$Freq < 0)) {
+      p.final <- p +  geom_conn_bundle(data =  get_con(from = connections_test$Var1, to = connections_test$Var2, values = connections_test$Freq), 
+                                      alpha = 0.8, 
+                                      tension = 0.5,
+                                      aes(color = values)) +
+        scale_edge_color_gradient(low = "blue", high = "white") +
+        guides( alpha = FALSE, size = FALSE) +
+        labs(colour = "Brain Network")
+    } else {
+      p.final <- p +  geom_conn_bundle(data =  get_con(from = connections_test$Var1, to = connections_test$Var2, values = connections_test$Freq), 
+                                       alpha = 0.8, 
+                                       tension = 0.5,
+                                       aes(color = values)) +
+        scale_edge_colour_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, na.value = "grey50")+
+        guides( alpha = FALSE, size = FALSE) +
+        labs(colour = "Brain Network")
+    }
     
     return(p.final)
 }
