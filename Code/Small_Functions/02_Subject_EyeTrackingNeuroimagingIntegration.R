@@ -87,7 +87,7 @@ Convolution_function <- function(totaltime, onsets, durations, sampling_rate) {
   
   # Perform convolution with the stimulus and HRF
   # (Ensure 'stimulus' and 'newhrf' have the same length for later convolution)
-  stimulus_padded <- c(stimulus, rep(0, length(time_vector) - length(stimulus)))
+  stimulus_padded <- c(stimulus, c(rep(0, length(time_vector) - length(stimulus)), rep(0, length(stimulus))))
   hrf_kernel <- canonicalHRF(time_vector, verbose = FALSE) # Double-gamma Function
   hrf_padded <- c(hrf_kernel, rep(0, length(stimulus)))
   
