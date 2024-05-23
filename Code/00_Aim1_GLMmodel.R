@@ -18,6 +18,9 @@ required_packages <- c(
   "neuRosim", "lmtest", "ciftiTools", "sandwich", "readxl", "RCurl", "git2r"
 )
 
+# install.packages("devtools")
+devtools::install_github("elab-umn/eyeQuality")
+
 # Run the function to install and load the packages
 install_and_load_packages(required_packages)
 # Setting Workbench path for ciftiTools
