@@ -263,6 +263,12 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
   
   # Combine the eye-tracking and head motion data with additional covariates
   covariate.data <- cbind(ET.covariates, rbind(head.motion.covariate.ses1, head.motion.covariate.ses2), indicator, indextime)
+
+  # create the other interaction covariate terms
+  covariate.data$time_square <- covariate.data$indextime^2
+  covariate.data$time_indicator <- covariate.data$indextime * covariate.data$indicator
+  covariate.data$time_square_indicator <- covariate.data$time_square * covariate.data$indicator
+  
   # Add interaction terms for time and session indicators 
   covariate.data = covariate.data %>% mutate(
     tx_indicator = trans_x * indicator,
