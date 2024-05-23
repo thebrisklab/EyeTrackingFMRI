@@ -462,23 +462,23 @@ LS.construct.logY <- function(resi.acf.list, length) {
 # - A list containing regression results for all models.
 
 LS.robust.estimation <- function(log.Y.forLS, totalcovariates.scale, length) {
-  # Add intercept column to the design matrix
-  design.matrix <- cbind(rep(1, length), totalcovariates.scale)
   
   # Initialize an empty list to store regression results
-  robust.regression.all <- vector("list", ncol(log.Y.forLS))
+  robust.regression.all <- list()
   
   # Perform OLS regression with robust standard errors for each model
   for (i in 1:ncol(log.Y.forLS)) {
-    ols.model <- lm(log.Y.forLS[, i] ~ ., data = as.data.frame(design.matrix))
+    ols.model <- lm(log.Y.forLS[, i] ~ ., data = totalcovariates.scale)
+    # robust coef
     robust.ols <- coeftest(ols.model, vcov = vcovHC(ols.model, type = "HC3"))
+    # covariance matrix
     cov.blink.fix <- vcovHC(ols.model, type = "HC3")
+    # store each coefs in the list
     robust.regression.all[[i]] <- list(robust.ols, cov.blink.fix)
   }
   
   return(robust.regression.all)
 }
-
 # Example of usage:
 # robust_results <- LS.robust.estiomation(log_y_data, scaled_covariates, 671)
 
