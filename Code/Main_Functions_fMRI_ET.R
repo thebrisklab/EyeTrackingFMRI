@@ -72,7 +72,9 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   # Extract blink or fixation data and calculate real time
   if (blink) {
     # eyeQuality to detect the eye-blink event
-    eyeQuality.result <- detectBlinks(data = ETasc$raw,
+    ETraw <- ETasc$raw
+    ETraw$newtime <- (ETraw$time - min(ETraw$time))/1000 
+    eyeQuality.result <- detectBlinks(data = ETraw,
                                       pupilLeft  = "ps",
                                       recHz = 500)
     # process to get the ts, te, duration
@@ -111,7 +113,6 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   
   return(list(totaltime, onsets, durations, sampling_rate))
 }
-
 
 # Example of usage:
 # et_data <- ETascDataProcess(file_path = "path/to/data.asc", blink = TRUE, fixation = FALSE)
@@ -263,14 +264,13 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
   
   # Combine the eye-tracking and head motion data with additional covariates
   covariate.data <- cbind(ET.covariates, rbind(head.motion.covariate.ses1, head.motion.covariate.ses2), indicator, indextime)
-
   # create the other interaction covariate terms
   covariate.data$time_square <- covariate.data$indextime^2
   covariate.data$time_indicator <- covariate.data$indextime * covariate.data$indicator
   covariate.data$time_square_indicator <- covariate.data$time_square * covariate.data$indicator
   
   # Add interaction terms for time and session indicators 
-  covariate.data = covariate.data %>% mutate(
+  covariate.data = covariate.data %>% dplyr::mutate(
     tx_indicator = trans_x * indicator,
     ty_indicator = trans_y * indicator,
     tz_indicator = trans_z * indicator,
@@ -340,7 +340,6 @@ DesignMatrix_process.ses1 <- function(ET.covariates = ET.covariates, head.motion
 #   - Residuals from the ARIMA model.
 #   - Covariance matrices for each region.
 
-
 ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
   # Initialize matrices to store the ARIMA model's output for blink and fixation coefficients
   estimate.region.blink <- matrix(data = NA, nrow = num, ncol = 4)
@@ -358,7 +357,6 @@ ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
     # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
     estimate.region.blink[i, ] <- coeftest(arima.region)["blink.ses1.ses2",]
     estimate.region.fixation[i, ] <- coeftest(arima.region)["fixation.ses1.ses2",]
-    
     
     # Store residuals and covariance matrix of the fitted model
     resi.acf[[i]] <- residuals(arima.region)
@@ -463,7 +461,7 @@ LS.construct.logY <- function(resi.acf.list, length) {
   }
   # construct T by 5050 outcome matrix
   log.Y.forLS <- array(log.Y.outcome.vector, dim = c(length,5050))
- 
+  
   return(log.Y.forLS)
 }
 
