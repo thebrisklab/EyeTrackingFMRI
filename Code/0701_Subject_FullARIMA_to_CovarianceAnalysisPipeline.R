@@ -116,7 +116,7 @@ Function_get_Z_stat_covariance <- function(ARIMAoutput) {
   
   #######################################################################################################################
   # Perform robust estimation using the log-transformed outcomes and the scaled design matrix
-  robust.estimation <- LS.robust.estiomation(log.Y.forLS = log.Y.LS, totalcovariates.scale = Scale.design.matrix, length = length)
+  robust.estimation <- LS.robust.estimation(log.Y.forLS = log.Y.LS, totalcovariates.scale = Scale.design.matrix, length = length)
   
   #######################################################################################################################
   # Calculate the matrix of t-statistics for comparisons between different model outcomes
