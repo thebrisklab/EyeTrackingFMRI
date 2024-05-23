@@ -13,7 +13,6 @@
 
 # Output:
 # - A matrix of log-transformed outcomes for LS regression.
-
 LS.construct.logY <- function(resi.acf.list, length) {
   # Create a matrix to hold residuals for all regions across time points
   y_v_t <- matrix(nrow = 100, ncol = length)
