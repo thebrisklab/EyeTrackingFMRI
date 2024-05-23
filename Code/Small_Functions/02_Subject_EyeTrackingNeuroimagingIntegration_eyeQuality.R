@@ -19,7 +19,9 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
   # Extract blink or fixation data and calculate real time
   if (blink) {
     # eyeQuality to detect the eye-blink event
-    eyeQuality.result <- detectBlinks(data = ETasc$raw,
+    ETraw <- ETasc$raw
+    ETraw$newtime <- (ETraw$time - min(ETraw$time))/1000 
+    eyeQuality.result <- detectBlinks(data = ETraw,
                                       pupilLeft  = "ps",
                                       recHz = 500)
     # process to get the ts, te, duration
@@ -39,7 +41,6 @@ ETascDataProcess <- function(file_path, blink = FALSE, fixation = FALSE) {
     ETtypein <- etblink.se[,c("newtime","event", "blink_seq")] %>% group_by(blink_seq) %>% 
       pivot_wider(names_from = "event", values_from = "newtime") %>%
       dplyr::mutate(duration = te - ts)
-
   } else if (fixation) {
     ETtypein <- ETasc$fix %>% 
       dplyr::mutate(ts = (stime - min(ETasc$raw$time)) / 1e3,
