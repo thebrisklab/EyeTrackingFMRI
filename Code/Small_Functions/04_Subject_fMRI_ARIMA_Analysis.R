@@ -45,3 +45,31 @@ ARIMAmodel <- function(xii_pmean, design.matrix, num = 100) {
 # Example of usage:
 # Assuming 'fMRI_time_series' is your fMRI data matrix and 'scaled_design_matrix' is your design matrix prepared earlier
 # results <- ARIMAmodel(xii_pmean = fMRI_time_series, design.matrix = scaled_design_matrix, num = 100)
+
+# for subject with one useful session data
+ARIMAmodel.ONEses <- function(xii_pmean, design.matrix, num = 100) {
+  # Initialize matrices to store the ARIMA model's output for blink and fixation coefficients
+  estimate.region.blink <- matrix(data = NA, nrow = num, ncol = 4)
+  estimate.region.fixation <- matrix(data = NA, nrow = num, ncol = 4)
+  
+  # Initialize lists to store residuals and covariance matrices for each region
+  resi.acf <- vector("list", num)
+  cov.matrix <- vector("list", num)
+  
+  # Loop through each region to fit the ARIMA model and store the outputs
+  for (i in 1:num) {
+    # Fit the ARIMA model using the specified order and external regressors
+    arima.region <- arima(xii_pmean[i,], order = c(3,0,0), xreg = design.matrix)
+    
+    # Extract coefficients for eyeblink and eyefixation using their specific positions in the output
+    estimate.region.blink[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.blink.ses1",]
+    estimate.region.fixation[i, ] <- coeftest(arima.region)["sub.convolution.timeseries.fixation.ses1",]
+    
+    # Store residuals and covariance matrix of the fitted model
+    resi.acf[[i]] <- residuals(arima.region)
+    cov.matrix[[i]] <- vcov(arima.region)
+  }
+  
+  # Return a list containing all the results
+  return(list(estimate.region.blink, estimate.region.fixation, resi.acf, cov.matrix))
+}
