@@ -56,7 +56,7 @@ Hierarchical.Circle.plot <- function(z_statistic_matrix, threshold.value) {
     connections_test$Freq <- as.numeric(as.character(connections_test$Freq))
     connections_test <- subset(connections_test, connections_test$Freq != 0)
     
-    # Need to change the threshold based on specifc purpose, i.e., to keep the "connections" you wanted to show in the plot 
+    # Need to change the threshold based on specific purpose, i.e., to keep the "connections" you wanted to show in the plot 
     threshold <- quantile(abs(connections_test$Freq), threshold.value)
     connections_test <- connections_test[abs(connections_test$Freq) >= threshold, ]
     
