@@ -128,3 +128,4 @@ Function_get_Z_stat_covariance <- function(ARIMAoutput) {
 # Example of usage:
 # Assuming 'ARIMAmodel_results_1887002' is your input list containing ARIMA results and the scaled design matrix:
 # final_comparison_matrix <- Function_get_Z_stat_covariance(ARIMAmodel_results_1887002)
+
