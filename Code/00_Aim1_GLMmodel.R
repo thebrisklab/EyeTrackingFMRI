@@ -23,8 +23,11 @@ devtools::install_github("elab-umn/eyeQuality")
 
 # Run the function to install and load the packages
 install_and_load_packages(required_packages)
+
 # Setting Workbench path for ciftiTools
-ciftiTools.setOption("wb_path", "/Users/fredhuang/Downloads/workbench")
+# this line needs to be changed to correspond to the location in 
+# which connectome workbench was installed:
+ciftiTools.setOption("wb_path", "~/workbench-linux64-v1.5.0/workbench")
 
 # Source the R scripts with functions needed
 source("Code/Main_Functions_fMRI_ET.R")
