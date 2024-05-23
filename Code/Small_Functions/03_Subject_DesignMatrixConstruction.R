@@ -60,8 +60,13 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
   
   # Combine the eye-tracking and head motion data with additional covariates
   covariate.data <- cbind(ET.covariates, rbind(head.motion.covariate.ses1, head.motion.covariate.ses2), indicator, indextime)
+  # create the other interaction covariate terms
+  covariate.data$time_square <- covariate.data$indextime^2
+  covariate.data$time_indicator <- covariate.data$indextime * covariate.data$indicator
+  covariate.data$time_square_indicator <- covariate.data$time_square * covariate.data$indicator
+  
   # Add interaction terms for time and session indicators 
-  covariate.data = covariate.data %>% mutate(
+  covariate.data = covariate.data %>% dplyr::mutate(
     tx_indicator = trans_x * indicator,
     ty_indicator = trans_y * indicator,
     tz_indicator = trans_z * indicator,
@@ -78,7 +83,7 @@ DesignMatrix_process <- function(ET.covariates, head.motion.covariate.ses1, head
   
   # Scale the covariates within each task session
   totalcovariates.scale <- covariate.data %>% group_by(indicator) %>%
-    mutate(across(trans_x:rz_square_indicator, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
+    dplyr::mutate(across(trans_x:rz_square_indicator, ~scale(., center = mean(., na.rm = TRUE), scale = sd(., na.rm = TRUE))))
   # Convert to data.frame and replace all NA values resulting from scaling with zeros
   totalcovariates.scale <- as.data.frame(totalcovariates.scale)
   totalcovariates.scale[is.na(totalcovariates.scale)] <- 0
